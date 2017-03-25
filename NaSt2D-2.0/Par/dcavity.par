@@ -1,0 +1,57 @@
+dcavity         problem: Nischenstroemung
+
+kein		file, aus dem die FLAG-Verteilung gelesen werden soll
+kein    	infile: File, aus dem Startwerte gelesen werden sollen (File from which start values are to be read)
+kein  	outfile: File, in den binaere Zwischenwerte geschrieben werden sollen (File in which binary values are to be written)
+0		pflag: =0  keine FLAG-Matrix-Ausgabe, =1 Ausgabe zur Kontrolle und Aenderung
+
+1.0		xlength: Gebietslaenge in x-Richtung
+1.0		ylength: Gebietslaenge in y-Richtung
+50		imax: Anzahl der inneren Zellen in x-Richtung 
+50		jmax: Anzahl der inneren Zellen in y-Richtung 
+
+50		t_end: =0. Berechnung endet bei stationaerer Stroemung (du/dt<1.e-04); >0. (aber !=29.3) Endzeit 
+0.01		delt: delta_t
+0.5		tau:  Sicherheitsfaktor fuer Zeitschrittweitensteuerung, Intervall [0,1]
+
+100000.0 	del_trace: Zeitabstand fuer Schreiben beim Particletracing
+0.1		del_inj:   Zeitabstand fuer Partikel injizieren
+0.1		del_streak:Zeitabstand fuer Streaklines schreiben
+0.1		del_vec:   Zeitabstand fuer Geschwindigkeiten schreiben
+
+dcav.out 	Datei fuer Ausgabe der Geschwindigkeiten, Druck, Psi, Zeta
+zeit.dat	Datei fuer Ausgabe des Zeit- und Geschwindigkeitsverlaufes
+kein  	Datei fuer Particletracing
+kein 	Datei fuer Streaklines
+
+0		N: Anzahl der Partikellinien (number of particle lines)
+0.2		pos1x: Koordinaten des Anfangspunkts der Strecke, 
+0.3 		pos1y: auf der Partikel der Streaklines eingefuegt werden
+0.2		pos2x: Koordinaten des Endpunkts der Strecke, 
+0.3		pos2y: auf der Partikel der Streaklines eingefuegt werden
+
+100		itermax: maximale Iterationsschritte fuer Druckkorrektur
+0.001		eps : Abbruchkriterium fuer Druckkorrektur
+1.7		omg : Relaxationsfaktor fuer SOR-Verfahren, Intervall [0,2], Gauss-Seidel =1, Standard =1.7
+0.9		gamma: Upwind-Differencing-Faktor, Intervall [0,1]   
+2               p_bound: Flag fuer die Druckrandbehandlung in der SOR-Iteration (1 = Gleichung modifizieren [1, S.37], 2 = Druckwerte in Randnaehe uebertragen [1, S.39])
+
+100.0	Re: Reynoldszahl
+1.0		Pr: Prandtlzahl
+0.0		beta: Volumenexpansionskoeffizient
+0.0		GX:
+0.0		GY: (Volumenkraefte, z.B. Gravitation)    
+0.0		UI:
+0.0		VI: Anfangwerte 
+0.0		TI:
+
+1		tmod: Turbulenzmodus (0 = keine Turbulenz, 1 = Standard k,epsilon Modell, 2 = Low Reynolds Number Modell)
+0.00003		KAI:  Anfangwert turbulente kinetische Energie
+0.000005	EPI:  Anfangwert Dissipationsrate der turbulenten kinetischen Energie 
+
+2		wW: Codierung der Randbedigungen:
+2		wO:   1 = Rutsch-    3 = Ein-, Ausstroem-
+2		wN:   2 = Haft-      4 = periodische Bedingungen in x-Richtung
+2		wS:   5 = Universelles Logarithmisches Wandgesetz 
+0.		delxw: Dicken der viskosen Unterschicht, beide muessen entweder >0 sein
+0.		delyw: bei Randbedingung 5 oder =0 sein bei Randbedingung 3

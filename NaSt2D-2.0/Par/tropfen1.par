@@ -1,0 +1,60 @@
+tropfen1        problem: Fallender Tropfen
+
+kein		file, aus dem die FLAG-Verteilung gelesen werden soll
+kein	 	infile: File, aus dem Startwerte gelesen werden sollen
+kein 		outfile: File, in den bin"are Zwischenwerte geschrieben werden sollen
+0		pflag: =0  keine FLAG-Matrix-Ausgabe, =1 Ausgabe zur Kontrolle und Aenderung
+
+8.0		xlength: Gebietslaenge in x-Richtung
+6.0		ylength: Gebietslaenge in y-Richtung
+40		imax: Anzahl der inneren Zellen in x-Richtung 
+30		jmax: Anzahl der inneren Zellen in y-Richtung 
+
+50.0		t_end: =0.  Berechnung endet bei stationaerer Stroemung (du/dt<1.e-04); >0. (aber !=29.3) Endzeit
+0.01		delt: delta_t
+0.002		tau:  Sicherheitsfaktor fuer Zeitschrittweitensteuerung
+
+1000000.0	del_trace: Zeitabstand fuer Schreiben beim Particletracing  
+1000000.0	del_inj:   Zeitabstand fuer Partikel injezieren
+0.5		del_streak:Zeitabstand fuer Streaklines schreiben
+0.5 		del_vec:   Zeitabstand fuer Geschwindigkeiten schreiben
+
+tropfen.out 	Datei fuer Ausgabe der Geschwindigkeiten, Druck, Psi, Zeta
+zeit.dat	Datei fuer Ausgabe des Zeit- und Geschwindigkeitsverlaufes
+kein		Datei fuer Particletracing
+tropfen.str	Datei fuer Streaklines
+
+0		N: Anzahl der Partikellinien
+0.0		pos1x: Koordinaten des Anfangspunkts der Strecke, 
+0.0		pos1y: auf der Partikel der Streaklines eingefuegt werden
+0.0		pos2x: Koordinaten des Endpunkts der Strecke, 
+0.0		pos2y: auf der Partikel der Streaklines eingefuegt werden
+
+500		itermax: maximale Iterationsschritte f"ur Druckkorrektur
+0.001		eps : Abbruchkriterium f"ur Druckkorrektur
+1.7		omg : Relaxationsfaktor f"ur Gau"s-Seidel (SOR)   
+0.5		gamma: Upwind-Differencing-Faktor   
+2           	p_bound: Flag fuer die Druckrandbehandlung in der SOR-Iteration (1 = Gleichung modifizieren (Buch S. 37), 2 = Druckwerte in Randnaehe uebertragen (Buch S. 39))
+
+40.0		Re: Reynoldszahl
+1.0	      	Pr: Prandtlzahl
+0.0    		beta: Volumenexpansionskoeffizient
+0.0		GX:
+-1.0		GY: (Volumenkraefte, z.B. Gravitation)    
+0.0		UI:
+0.0		VI: Anfangwerte 
+0.0         	TI:
+
+1		tmod: Turbulenzmodus (0 = keine Turbulenz, 1 = Standard k,epsilon Modell, 2 = Low Reynolds Number Modell)
+0.003		KAI:  Anfangwert turbulente kinetische Energie
+0.0005		EPI:  Anfangwert Dissipationsrate der turbulenten kinetischen Energie 
+
+1		wW: Codierung der Randbedigungen:
+1		wO:   1 = Rutsch-    3 = Ein-, Ausstroem-
+3		wN:   2 = Haft-      4 = periodische Bedingungen in x-Richtung
+1		wS:   5 = Universelles Logarithmisches Wandgesetz (mit delw > 0.)
+0.		delxw: Dicke des laminaren Wandbereiches
+0.		delyw: Dicke des laminaren Wandbereiches
+
+
+
