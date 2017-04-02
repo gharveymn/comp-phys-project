@@ -20,8 +20,7 @@ fclose(fid);
 
 % Open one window 
 %%%%%%%%%%%%%%%%%%%%%%%%
-figure(1)
-clf
+figure
 
 % Draw the level sets of u,v,p,psi,... inside one window 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
