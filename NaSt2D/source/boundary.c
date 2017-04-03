@@ -195,6 +195,19 @@ void SETSPECBCOND(char* problem,REAL **U,REAL **V,REAL **P,REAL **TEMP,
         U[i][jmax+1] = 2.0 - U[i][jmax]; /*  */
      return;
     }
+    
+  else if(strcmp(problem, "boundTest")==0)
+  {
+	for(i=0;i<=imax;i++)
+	{
+        U[i][jmax+1] = 2.0 - U[i][jmax]; /*  */
+	   U[i][1] = 6.0 - U[i][0]; /*  */
+	}
+	
+	//V[i][1] = 6.0 - U[i][0]; /*  */
+	//V[i][1] = 6.0 - U[i][0]; /*  */
+     return;
+  }
 
  /*-----------------------------------------------------------------*/
  /* Flow past a backward facing step, with or without free boundary */

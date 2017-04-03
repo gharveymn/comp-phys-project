@@ -37,7 +37,7 @@ int READ_PARAMETER(char *Inputfile,char *problem,
       strcmp(problem, "dcavity") && strcmp(problem, "backstep") &&
       strcmp(problem, "plate") && strcmp(problem, "circle") &&
       strcmp(problem, "dam") && strcmp(problem, "drop") &&
-      strcmp(problem, "molding") && strcmp(problem, "wave"))
+      strcmp(problem, "molding") && strcmp(problem, "wave") && strcmp(problem, "boundTest"))
   {
     printf("Problem %s not defined!\n", problem);
     printf("Choose dcavity\n");
@@ -51,6 +51,7 @@ int READ_PARAMETER(char *Inputfile,char *problem,
     printf("       dam\n");
     printf("       molding\n");
     printf("       wave\n");
+    printf("       boundTest\n");
     return(1);
   }
 
