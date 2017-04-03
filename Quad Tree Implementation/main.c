@@ -39,6 +39,7 @@ char contains_object(Map* map, Point loc, float l, float w);
 Map * makeMap(char* filename);
 void printMap(Map * map);
 void outputTree(Node* node, FILE *fp, Point point, float l, float w);
+void freeTree(Node* node);
 
 //Maximum depth of the quadtree
 const int qt_threshold = 7;
@@ -51,9 +52,11 @@ int main(int argc, char** args)
 	root->depth = 0;
 	makeQT(root, map, map->min, map->max.x - map->min.x, map->max.y - map->min.y);
 
-	FILE* fp = fopen("tree.txt", "w+");
+	FILE* fp = fopen("tree.txt", "w");
 	outputTree(root, fp, map->min, map->max.x - map->min.x, map->max.y - map->min.y);
 	fclose(fp);
+	free(map);
+	freeTree(root);
 }
 
 void makeQT(Node* curr, Map* map, Point loc, float l, float w)
@@ -276,5 +279,21 @@ void outputTree(Node* node, FILE *fp, Point point, float l, float w)
 	{
 		fprintf(fp, "%f %f %f %f\n", point.x, point.y, l, w);
 	}
+}
+void freeTree(Node* node)
+{
+	if(node == NULL)
+	{
+		return;
+	}
+	if (node->tl_child == NULL)
+	{
+		free(node);
+		return;
+	}
+	freeTree(node->tl_child);
+	freeTree(node->tr_child);
+	freeTree(node->bl_child);
+	freeTree(node->br_child);
 }
 
