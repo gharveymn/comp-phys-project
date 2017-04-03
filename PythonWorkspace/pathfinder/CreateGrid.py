@@ -11,8 +11,8 @@ def densityGrid():
 	z /= z.sum()
 	
 	f = interpolate.interp2d(x, y, z, 'cubic')
-	x2 = np.linspace(0, 1, 1000)
-	y2 = np.linspace(0, 1, 1000)
+	x2 = np.linspace(0, 1, 100)
+	y2 = np.linspace(0, 1, 100)
 	z2 = f(x2, y2)
 	z2 /= z2.sum()
 	x2, y2 = np.meshgrid(x2, y2)
@@ -72,7 +72,7 @@ def createGraphDict(x,y,z):
 		pass
 	pass
 
-	return gdict
+	return gdict, allPoints
 
 pass
 	
