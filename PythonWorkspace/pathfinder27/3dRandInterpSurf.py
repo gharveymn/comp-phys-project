@@ -14,6 +14,7 @@ def main():
 	geom = mngr.window.geometry()
 	x, y, dx, dy = geom.getRect()
 	mngr.window.setGeometry(100, 100, dx, dy)
+	
 	# Provides x and y coordinates associated with one random z coordinate
 	x = np.linspace(0, 1, 5)
 	y = np.linspace(0, 1, 5)
