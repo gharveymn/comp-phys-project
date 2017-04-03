@@ -1,5 +1,5 @@
 desktop.ini
 
-.idea*
-__pycache__*
-debug.log
+.idea/**
+*.asv
+Path Finding/tree.txt
