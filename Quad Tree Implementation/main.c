@@ -63,6 +63,7 @@ void makeQT(Node* curr, Map* map, Point loc, float l, float w)
 {
 	if (curr->depth == qt_threshold)
 	{
+		//Tree is deep enough, quit dividing
 		curr->tl_child = NULL;
 		curr->tr_child = NULL;
 		curr->bl_child = NULL;
@@ -112,12 +113,22 @@ void makeQT(Node* curr, Map* map, Point loc, float l, float w)
 		curr->br_child = NULL;
 	}
 }
+/*contains_object checks if a given area contains an object
+Params:
+@map holds info about all the objects
+@loc has fields loc.x and loc.y that are the x and y values for the bottom right corner of the area we are checking
+@l is the length (in x direction) of the area
+@w is the width (y direction) of the area
+*/
 char contains_object(Map* map, Point loc, float l, float w)
 {
-	char leftBounded;
-	char rightBounded;
-	char topBounded;
-	char bottomBounded;
+	char leftBounded = 0;
+	char rightBounded = 0;
+	char topBounded = 0;
+	char bottomBounded = 0;
+	//obj_max and obj_min are two points that describe the location of an object.
+	//obj_max.x and obj_max.y are the x and y values of the top right corner of the object
+	//obj_min.x and obj_min.y are the x and y values of the bottom left corner of the object
 	Point obj_min;
 	Point obj_max;
 	Square curr;
@@ -129,7 +140,7 @@ char contains_object(Map* map, Point loc, float l, float w)
 		obj_min.x = curr.center.x - curr.length/2;
 		obj_min.y = curr.center.y - curr.width/2;
 		
-		//left bounded?
+		//Check if the left side is bounded by the area
 		if (obj_min.x >= loc.x && obj_min.x <= loc.x + l)
 		{
 			if(obj_max.y >= loc.y + w && obj_min.y <= loc.y + w)
@@ -145,7 +156,7 @@ char contains_object(Map* map, Point loc, float l, float w)
 				leftBounded = 1;
 			}
 		}
-		//right bounded?
+		//Check if the right side is bounded by the area
 		else if (obj_max.x >= loc.x && obj_max.x <= loc.x + l)
 		{
 			if(obj_max.y >= loc.y + w && obj_min.y <= loc.y + w)
@@ -161,7 +172,7 @@ char contains_object(Map* map, Point loc, float l, float w)
 				rightBounded = 1;
 			}
 		}
-		//top bounded?
+		//Check if the top side is bounded by the area
 		else if (obj_max.y >= loc.y && obj_max.y <= loc.y + w)
 		{
 			if (obj_min.x <= loc.x && obj_max.x >= loc.x)
@@ -177,7 +188,7 @@ char contains_object(Map* map, Point loc, float l, float w)
 				topBounded = 1;
 			}
 		}
-		//bottom bounded?
+		//Check if the bottom side is bounded by the area
 		else if (obj_min.y >= loc.y && obj_min.y <= loc.y + w)
 		{
 			if (obj_min.x <= loc.x && obj_max.x >= loc.x)
@@ -198,6 +209,7 @@ char contains_object(Map* map, Point loc, float l, float w)
 	{
 		return 1;
 	}
+	printf("zero\n");
 	return 0;
 }
 
@@ -277,6 +289,7 @@ void outputTree(Node* node, FILE *fp, Point point, float l, float w)
 	}
 	else
 	{
+		//Print info for all the deepest children of the tree, the higher up children don't matter for visualization
 		fprintf(fp, "%f %f %f %f\n", point.x, point.y, l, w);
 	}
 }
@@ -285,10 +298,12 @@ void freeTree(Node* node)
 	if(node == NULL)
 	{
 		return;
+
 	}
 	if (node->tl_child == NULL)
 	{
 		free(node);
+
 		return;
 	}
 	freeTree(node->tl_child);
