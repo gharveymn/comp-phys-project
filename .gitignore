@@ -3,3 +3,9 @@ desktop.ini
 .idea/**
 *.asv
 Path Finding/tree.txt
+*.xml
+PythonWorkspace/pathfinder/.idea/pathfinder.iml
+*.pyc
+Quad Tree Implementation/tree.txt
+Quad Tree Implementation/tree.txt
+Quad Tree Implementation/tree.txt
