@@ -3,3 +3,7 @@ desktop.ini
 .idea/**
 *.asv
 Path Finding/tree.txt
+*.xml
+*.iml
+PythonWorkspace/pathfinder/__pycache__/CreateGrid.cpython-36.pyc
+*.pyc
