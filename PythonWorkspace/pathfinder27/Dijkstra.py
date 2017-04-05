@@ -9,7 +9,10 @@ def main(gdict):
 pass
 
 def makeGraph(gdict):
+	
 	gNumVerts = len(gdict)
+	
+	#igraph vertices using numbers, this links our keys to those numbers
 	numKeyMap = dict(zip(gdict.keys(), range(gNumVerts)))
 	edges = []
 	for firstVertex in gdict:
@@ -26,16 +29,20 @@ def makeGraph(gdict):
 	g.es["label"] = [gdict[key1][key2] for key1 in gdict.keys() for key2 in gdict[key1].keys()]
 	
 	return g, edges, numKeyMap
+
 pass
 
 
 def plotGraph(g, sp, edges, numKeyMap):
 	spnodes = sp[1]
 	spedges = [None] * (len(spnodes) - 1)
+	
+	#igraph stores edges as (x,y) with x,y in natural numbers. This extracts the edges.
 	for i in range(len(spnodes) - 1):
 		spedges[i] = (numKeyMap[spnodes[i]], numKeyMap[spnodes[i + 1]])
 	pass
 	
+	#Labeling the edges of the shortest path red
 	spedgecolors = ["blue"] * len(edges)
 	for e in edges:
 		if e in spedges:
@@ -46,6 +53,7 @@ def plotGraph(g, sp, edges, numKeyMap):
 	visual_style = {"vertex_label": g.vs["name"], "edge_color": spedgecolors, "edge_curved": False}
 	
 	plot(g, **visual_style)
+	
 pass
 
 def shortestpath(graph, current, end, visited=[], distances={}, predecessors={}):
@@ -90,12 +98,6 @@ def rmList(lst, rmel):
 
 if __name__ == "__main__":
 	#gdict should be a second order nested dictionary of size n = number of nodes, second order vals are distances
-	# gdict = {'a': {'w': 14, 'x': 7, 'y': 9},
-	# 	    'b': {'w': 9, 'z': 6},
-	# 	    'w': {'a': 14, 'b': 9, 'y': 2},
-	# 	    'x': {'a': 7, 'y': 10, 'z': 15},
-	# 	    'y': {'a': 9, 'w': 2, 'x': 10, 'z': 11},
-	# 	    'z': {'b': 6, 'x': 15, 'y': 11}}
 	
 	numNodes = 26
 	nodes = list(map(chr, range(97, 97+numNodes)))

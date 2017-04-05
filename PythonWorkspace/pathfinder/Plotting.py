@@ -3,8 +3,10 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import matplotlib.ticker as mt
+import matplotlib.path as mpath
+import matplotlib.patches as patches
 
-def plot2dHeatMap(fig, z):
+def plot2dHeatMap(fig, x, y, z):
 	'''z is a 2d grid; x and y are implicit linspaces'''
 	
 	from mpl_toolkits.axes_grid1 \
@@ -43,11 +45,41 @@ def plot2dHeatMap(fig, z):
 	plt.colorbar(im, cax=ax_cb)
 	plt.setp(ax_cb.get_yticklabels(), visible=False)
 	
+	return ax
+	
 pass
+
+
+def plot3dHeatMap(fig, x, y, z):
+	
+	ax = fig.gca(projection='3d')
+	surf = ax.plot_surface(x, y, z, cmap=cm.coolwarm, linewidth=0, antialiased=True)
+	ax.set_zlim(0, 2 * z.max())
+	ax.zaxis.set_major_locator(mt.LinearLocator(10))
+	ax.zaxis.set_major_formatter(mt.NullFormatter())
+	
+	cbar = fig.colorbar(surf, shrink=0.5, aspect=5)
+	plt.setp(cbar.ax.get_yticklabels(), visible=False)
+	
+	return ax
+
+pass
+
+def plotPath(ax, pts):
+	
+	#ax = fig.add_subplot(000)
+	codes = [mpath.Path.MOVETO] + [mpath.Path.LINETO]*(len(pts)-1)
+	path = mpath.Path(pts,codes)
+	
+	patch = patches.PathPatch(path, facecolor='none', edgecolor='black', lw=2)
+	ax.add_patch(patch)
+	ax.set_xlim(0, 1)
+	ax.set_ylim(0, 1)
+
 
 def setGeo(figNum):
 	mngr = plt.get_current_fig_manager()
 	geom = mngr.window.geometry()
 	x, y, dx, dy = geom.getRect()
-	mngr.window.setGeometry((figNum-1)*dx + 200, 100, dx, dy)
+	mngr.window.setGeometry((figNum-1)*dx + 50, 100, dx, dy)
 pass
