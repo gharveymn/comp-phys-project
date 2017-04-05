@@ -1,12 +1,8 @@
 import Plotting as pl
 import CreateGrid as cgrid
 import Dijkstra as dijk
-import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
-from matplotlib import cm
-import matplotlib.ticker as mt
-import collections
 
 def main():
 	
@@ -19,8 +15,15 @@ def main():
 	print("Grid created.")
 	#for key in sorted(gdict):print("%s: %s" % (key, gdict[key]))
 	
+	distance = lambda r1,r2:(r2[0]-r1[0])**2 + (r2[1]-r1[1])**2
 	
-	sp = dijk.shortestpath(gdict,(0.0,0.0),(1.0,1.0))
+	startPoint = (0.5,0.0)
+	endPoint = (0.5,1.0)
+	
+	r1 = min(gdict.keys(), key=lambda x: distance(x, startPoint))
+	r2 = min(gdict.keys(), key=lambda x: distance(x, endPoint))
+	
+	sp = dijk.shortestpath(gdict,r1,r2)
 	print("Best path found.")
 	
 	fig2 = plt.figure(2)
@@ -85,7 +88,7 @@ def test2(x,y,z,allPoints, gdict):
 	pl.plot3dHeatMap(fig3, x, y, z)
 	
 	pl.setGeo(3)
-
+pass
 
 
 if __name__ == '__main__':
