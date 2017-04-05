@@ -15,8 +15,7 @@ def densityGrid():
 	pl.plot2dHeatMap(fig1,x,y,z)
 	pl.setGeo(1)
 	
-	
-	f = interpolate.interp2d(x, y, z, 'cubic')
+	f = interpolate.interp2d(x,y,z,'cubic')
 	x2 = np.linspace(0, 1, 30)
 	y2 = np.linspace(0, 1, 30)
 	z2 = f(x2,y2)
@@ -35,12 +34,8 @@ pass
 def createGraphDict(x,y,z):
 	"""Creates a dictionary of adjacent indices and associated density.
 	Since x,y should be a linspace, we let each density be found
-	with D(x+dx,y+dy,x,y) = abs(z(x+dx,y+dx)-z(x,y))dxdy + z(x,y)dxdy, where dx, dy is the distance
-	between each x and y in the grid, respectively."""
+	with the average between the points times the arclength."""
 	
-	dx = x[0, 1] - x[0, 0]
-	dy = y[1, 0] - y[0, 0]
-	dxdy = dx * dy
 	D = lambda x1,y1,x2,y2:(z[x2,y2]+z[x1,y1])*np.sqrt((x2 - x1)**2 + (y2 - y1)**2)/2.
 	
 	xsz = x[0].size
@@ -67,7 +62,7 @@ def createGraphDict(x,y,z):
 	#{(x_i,y_j):{(x_{i+1},y_j):D(x_{i+1},y_j,x_i,y_j)},...}
 	for i in xinds:
 		
-		#looks like [[((0, 0), (1, 0)),((1, 0), (2, 0)),((2, 0), (3, 0)),...]
+		# looks like [[((0, 0), (0, 1)),((0, 1), (0, 2)),((0, 2), (0, 3)),...]
 		compInds = list(zip(allInds[i][:-1],allInds[i][1:]))
 		for p in compInds:
 			gdict[indsPtsMap[p[0]]][indsPtsMap[p[1]]] = D(*p[0],*p[1])
@@ -80,7 +75,7 @@ def createGraphDict(x,y,z):
 	
 	for j in yinds:
 		
-		# looks like [([((0, 0), (0, 1)),((0, 1), (0, 2)),((0, 2), (0, 3)),...]
+		# looks like [[((0, 0), (1, 0)),((1, 0), (2, 0)),((2, 0), (3, 0)),...]
 		compInds = list(zip(allIndsT[j][:-1], allIndsT[j][1:]))
 		for p in compInds:
 			gdict[indsPtsMap[p[0]]][indsPtsMap[p[1]]] = D(*p[0], *p[1])

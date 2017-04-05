@@ -67,7 +67,6 @@ pass
 
 def plotPath(ax, pts):
 	
-	#ax = fig.add_subplot(000)
 	codes = [mpath.Path.MOVETO] + [mpath.Path.LINETO]*(len(pts)-1)
 	path = mpath.Path(pts,codes)
 	
