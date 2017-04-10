@@ -3,10 +3,12 @@ from scipy import interpolate
 import Plotting as pl
 import matplotlib.pyplot as plt
 
-def densityGrid():
+def densityGrid(numx,numy):
 	# Provides x and y coordinates associated with one random z coordinate
 	x = np.linspace(0, 1, 5)
 	y = np.linspace(0, 1, 5)
+	#x = np.random.rand(5)
+	#y = np.random.rand(5)
 	x, y = np.meshgrid(x, y)
 	z = np.random.rand(x.size).reshape(x.shape)
 	z /= z.sum()
@@ -16,10 +18,12 @@ def densityGrid():
 	pl.setGeo(1)
 	
 	f = interpolate.interp2d(x,y,z,'cubic')
-	x2 = np.linspace(0, 1, 30)
-	y2 = np.linspace(0, 1, 30)
+	x2 = np.linspace(0, 1, numx)
+	y2 = np.linspace(0, 1, numy)
 	z2 = f(x2,y2)
 	z2 /= z2.sum()
+
+	avgDensity = z2.sum() #True since distribution is from 0 to 1, used for A* heuristic.
 	
 	#Uncomment this to test using smooth extremes
 	#z2 = np.max(z2)/(1 + np.exp(-5000 * (z2 - np.max(z2)/2)))
@@ -28,7 +32,7 @@ def densityGrid():
 	#zero out negative indices from interpolation
 	z2[z2 < 0] = 0
 	
-	return x2,y2,z2
+	return x2,y2,z2,avgDensity
 pass
 
 def createGraphDict(x,y,z):

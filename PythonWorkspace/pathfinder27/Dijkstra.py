@@ -1,7 +1,6 @@
 import random
 from igraph import *
 
-
 def main(gdict):
 	g, edges, numKeyMap = makeGraph(gdict)
 	sp = shortestpath(gdict, 'a', 'b')
