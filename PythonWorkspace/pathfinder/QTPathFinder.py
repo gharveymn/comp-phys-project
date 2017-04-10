@@ -23,7 +23,7 @@ def main():
 	pass
 
 	startPoint = (0,0)
-	endPoint = (8,8)
+	endPoint = (8,7.8)
 
 	r1 = findClosestNode(gdict,startPoint)
 	r2 = findClosestNode(gdict,endPoint)
@@ -31,10 +31,10 @@ def main():
 	sp = PathOpt.dijkstra(gdict,r1,r2)
 
 	path = sp[1]
-	path.insert(0,r1)
-	path.append(r2)
+	path.insert(0,startPoint)
+	path.append(endPoint)
 
-	pl.plotPath(ax,sp[1],'red')
+	pl.plotPath(ax,path,'red')
 	ax.set_xlim(limits[0],limits[1])
 	ax.set_ylim(limits[2],limits[3])
 
@@ -82,21 +82,6 @@ def parseQT():
 		i += num_adjacent*4
 
 	pass
-
-	#newdict = {}
-
-	# for keys1 in gdict:
-	# 	newdict[keys1] = {}
-	# 	for keys2 in gdict[keys1]:
-	# 		if keys2 in gdict.keys():
-	# 			print(keys2)
-	# 			newdict[keys1][keys2] = gdict[keys1][keys2]
-	# 		else:
-	# 			print(keys2)
-	# 		pass
-	# 	pass
-	# pass
-
 
 	return gdict
 
