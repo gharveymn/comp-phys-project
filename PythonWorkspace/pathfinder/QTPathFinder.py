@@ -46,14 +46,12 @@ pass
 
 def parseQT():
 
-	currDir = 'PythonWorkspace/pathfinder/'
-
-	my_file = filePath(currDir + 'tree.txt')
+	my_file = filePath('tree.txt')
 	if not my_file.is_file():
-    		os.startfile(currDir + 'CreateQT.exe')
+    		os.startfile('CreateQT.exe')
 	pass
 
-	file = open(currDir + 'tree.txt', 'r');
+	file = open('tree.txt', 'r');
 	data = [float(val) for val in file.read().strip().split()]
 
 
@@ -106,8 +104,7 @@ pass
 
 
 def parseMap():
-	currDir = 'PythonWorkspace/pathfinder/'
-	file = open(currDir + 'map.txt', 'r');
+	file = open('map.txt', 'r');
 	data = [float(val) for val in file.read().strip().split()]
 
 	x_min = data[0]
@@ -151,5 +148,6 @@ pass
 
 
 if __name__ == "__main__":
+	os.chdir(os.path.dirname(os.path.abspath(__file__)))
 	main()
 pass
