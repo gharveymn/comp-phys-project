@@ -10,13 +10,15 @@ import matplotlib.patches as patches
 import time
 import copy
 
-def main(startPoint, endPoint):
+def main(startPoint, endPoint, gdict):
 
 	plt.ion()
 	plt.clf()
 
 	#Get data from QT
-	gdict = parseQT()
+	if not gdict:
+		gdict = parseQT()
+	pass
 
 	fig1 = plt.figure(1)
 	plt.scatter(*list(zip(*gdict.keys())),s=1)
@@ -47,25 +49,21 @@ def main(startPoint, endPoint):
 
 	deportIllegals(gdict,rectVects)
 
-	print(gdict[(0.0, 1.25)])
+	findPathAStar(gdict,ax,startPoint,endPoint,limits)
 
-	findPath(gdict,ax,startPoint,endPoint,limits)
+	return gdict, ax, limits
 
 pass
 
 
-def findPath(gdict,ax,startPoint,endPoint,limits):
+def findPathDijkstra(gdict,ax,startPoint,endPoint,limits):
 
 	r1 = findClosestNode(gdict,startPoint)
 	r2 = findClosestNode(gdict,endPoint)
 	
 	t1 = time.time()
-	sp = PathOpt.dijkstra(gdict,r1,r2)
+	sp = PathOpt.dijkstra(gdict,r1,r2,ax)
 	t2 = time.time()
-
-	# t1 = time.time()
-	# sp = PathOpt.AStar(gdict,r1,r2)
-	# t2 = time.time()
 
 	print(t2-t1)
 
@@ -80,25 +78,43 @@ def findPath(gdict,ax,startPoint,endPoint,limits):
 	plt.show()
 pass
 
+def findPathAStar(gdict,ax,startPoint,endPoint,limits):
+
+	r1 = findClosestNode(gdict,startPoint)
+	r2 = findClosestNode(gdict,endPoint)
+
+	t1 = time.time()
+	sp = PathOpt.AStar(gdict,r1,r2)
+	t2 = time.time()
+
+	print(t2-t1)
+
+	path = sp[1]
+	path.insert(0,startPoint)
+	path.append(endPoint)
+
+	pl.plotPath(ax,path,'red')
+	ax.set_xlim(limits[0],limits[1])
+	ax.set_ylim(limits[2],limits[3])
+
+	plt.show()
+
+	return ax
+
+pass
+
+
+def findPathBoth(gdict,ax,startPoint,endPoint,limits):
+
+	findPathAStar(gdict,ax,startPoint,endPoint,limits)
+	findPathDijkstra(gdict,ax,startPoint,endPoint,limits)
+
+pass
+
 
 def deportIllegals(gdict, rectVects):
 
-	for rects in rectVects:
-		if rects[0] in gdict:
-			gdict[rects[0]].pop(rects[2],0)
-		pass
-		if rects[1] in gdict:
-			gdict[rects[1]].pop(rects[3],0)
-		pass
-		if rects[2] in gdict:
-			gdict[rects[2]].pop(rects[0],0)
-		pass
-		if rects[3] in gdict:
-			gdict[rects[3]].pop(rects[1],0)
-		pass
-	pass
-
-	toRemove = {}
+	#toRemove = {}
 
 	#Remove all paths which pass though a rectangle
 	# for i in gdict:
@@ -131,12 +147,12 @@ def deportIllegals(gdict, rectVects):
 	pass
 
 	
-	toRemove = []
+	toRemove = set()
 
 	#If i:{} then remove the empty i
 	for i,j in gdict.items():
 		if not j:
-			toRemove.append(i)
+			toRemove.add(i)
 		pass
 	pass
 
@@ -192,19 +208,19 @@ def parseQT():
 
 		gdict[(x,y)] = {}
 
-		gdict[(x,y)][(x+w,y)] = w
-		gdict[(x,y)][(x,y+l)] =l
+		gdict[(x,y)][(x+l,y)] = l
+		gdict[(x,y)][(x,y+w)] = w
 
 		if (x+w,y) in gdict:
-			gdict[(x+w,y)][(x,y)] = w
+			gdict[(x+l,y)][(x,y)] = l
 		else:
-			gdict[(x+w,y)] = {(x,y):w}
+			gdict[(x+l,y)] = {(x,y):l}
 		pass
 
 		if (x,y+l) in gdict:
-			gdict[(x,y+l)][(x,y)] = l
+			gdict[(x,y+w)][(x,y)] = w
 		else:
-			gdict[(x,y+l)] = {(x,y):l}
+			gdict[(x,y+w)] = {(x,y):w}
 		pass
 		
 
@@ -291,12 +307,17 @@ def findClosestNode(gdict,p):
 pass
 
 
-def findShortestPath(startPoint,endPoint):
-	main(startPoint,endPoint)
+def findShortestPath(startPoint,endPoint, gdict={}):
+	main(startPoint,endPoint,gdict)
+pass
+
+
+def findAllPaths(gdict,ax,limits):
+	#TODO Find all paths!
 pass
 
 
 if __name__ == "__main__":
 	os.chdir(os.path.dirname(os.path.abspath(__file__)))
-	main((0,0),(8,7.8))
+	findShortestPath((0,0),(8,7.8))
 pass

@@ -1,6 +1,8 @@
 import sys
 import numpy as np
 from HelperMethods import *
+import Plotting as pl
+import matplotlib.pyplot as plt
 
 
 def AStar(graph, startPoint, endPoint, hScalar=1.0):
@@ -48,10 +50,7 @@ def AStarEval(graph, current, end, h, visited=[], distances={}, predecessors={})
 
 pass
 
-
-
-
-def dijkstra(graph, current, end, visited=[], distances={}, predecessors={}):
+def dijkstra(graph, current, end, ax, visited=[], distances={}, predecessors={}):
 	
 	"""Find the shortest path between start and end nodes in a graph using Dijkstra's Algorithm"""
 	# we've found our end node, now find the path to it, and return
@@ -83,6 +82,7 @@ def dijkstra(graph, current, end, visited=[], distances={}, predecessors={}):
 	# finds the closest unvisited node to the start
 	notVisited = dict((k, distances.get(k, sys.maxsize)) for k in graph if k not in visited)
 	closest = min(notVisited, key=notVisited.get)
+
 	# now we can take the closest node and recurse, making it current
-	return dijkstra(graph, closest, end, visited, distances, predecessors)
+	return dijkstra(graph, closest, end, ax, visited, distances, predecessors)
 pass
