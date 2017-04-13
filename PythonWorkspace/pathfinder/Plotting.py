@@ -65,12 +65,12 @@ def plot3dHeatMap(fig, x, y, z):
 
 pass
 
-def plotPath(ax, pts, ec='black'):
+def plotPath(ax, pts, ec='black', linewidth = 2):
 	
 	codes = [mpath.Path.MOVETO] + [mpath.Path.LINETO]*(len(pts)-1)
 	path = mpath.Path(pts,codes)
 	
-	patch = patches.PathPatch(path, facecolor='none', edgecolor=ec, lw=2)
+	patch = patches.PathPatch(path, facecolor='none', edgecolor=ec, lw=linewidth)
 	ax.add_patch(patch)
 pass
 

@@ -14,7 +14,7 @@ for i=6:3:size(data,1) - 2
     y = data(i+1);
     w = data(i+2);
     rectangle('Position', [x y w w], 'FaceColor', 'y');
-end;
+end
 
 fileID = fopen('tree.txt', 'r');
 formatSpec = '%f';

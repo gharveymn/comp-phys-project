@@ -1,16 +1,16 @@
 import sys
 import numpy as np
+from HelperMethods import *
 
 
-def AStar(graph, startPoint, endPoint, distance, heuristic=1.0):
-	#def distance(x): return np.sqrt((endPoint[0]-x[0])**2 + (endPoint[1]-x[1])**2)/2
-	return AStarEval(graph, startPoint, endPoint, heuristic, distance)
+def AStar(graph, startPoint, endPoint, hScalar=1.0):
+	return AStarEval(graph, startPoint, endPoint, hScalar)
 pass
 
 
-def AStarEval(graph, current, end, h, distance, visited=[], distances={}, predecessors={}):
+def AStarEval(graph, current, end, h, visited=[], distances={}, predecessors={}):
 	
-	"""Find the shortest path between start and end nodes in a graph using Dijkstra's Algorithm"""
+	"""Find the shortest path between start and end nodes in a graph using a modified Dijkstra Algorithm"""
 	# we've found our end node, now find the path to it, and return
 	if current == end:
 		pathShortest = []
@@ -29,7 +29,8 @@ def AStarEval(graph, current, end, h, distance, visited=[], distances={}, predec
 			adjDist = distances.get(adjacent, sys.maxsize)
 			
 			#Trying to figure our the heuristic. Maybe has to do with instantaneous density?
-			curDist = distances[current] + graph[current][adjacent] + distance*h
+			#We'll try using the Euclidean dist to our destination.
+			curDist = distances[current] + graph[current][adjacent] + h*distancesq(adjacent, end)
 			if curDist < adjDist:
 				distances[adjacent] = curDist
 				predecessors[adjacent] = current
@@ -43,9 +44,11 @@ def AStarEval(graph, current, end, h, distance, visited=[], distances={}, predec
 	notVisited = dict((k, distances.get(k, sys.maxsize)) for k in graph if k not in visited)
 	closest = min(notVisited, key=notVisited.get)
 	# now we can take the closest node and recurse, making it current
-	return AStarEval(graph, closest, end, h, distance, visited, distances, predecessors)
+	return AStarEval(graph, closest, end, h, visited, distances, predecessors)
 
 pass
+
+
 
 
 def dijkstra(graph, current, end, visited=[], distances={}, predecessors={}):

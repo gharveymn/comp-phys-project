@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import time
 import random
 import numpy as np
+from HelperMethods import *
 
 def main():
 	
@@ -37,8 +38,8 @@ pass
 
 def calculatePaths(x,y,z,avgDensity,gdict,allPoints,indsPtsMap,ptsIndsMap,startPoint,endPoint):
 
-	r1 = min(gdict.keys(), key=lambda x: distance(x, startPoint))
-	r2 = min(gdict.keys(), key=lambda x: distance(x, endPoint))
+	r1 = min(gdict.keys(), key=lambda x: distancesq(x, startPoint))
+	r2 = min(gdict.keys(), key=lambda x: distancesq(x, endPoint))
 	
 	start = time.time()
 	sp = PathOpt.AStar(gdict,r1,r2,avgDensity, x[0][1] - x[0][0])
@@ -161,8 +162,6 @@ def speedTest(startPoint,endPoint,avgDensity,numx,numy):
 	print("Average Dijkstra time: {0} seconds".format(np.average(dijktimes)))
 
 pass
-
-def distance(r1,r2): return (r2[0]-r1[0])**2 + (r2[1]-r1[1])**2
 
 if __name__ == '__main__':
 	main()
