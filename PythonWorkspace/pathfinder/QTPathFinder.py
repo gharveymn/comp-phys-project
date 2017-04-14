@@ -8,18 +8,32 @@ import numpy as np
 import matplotlib.path as mpath
 import matplotlib.patches as patches
 import matplotlib.animation as animation
+import matplotlib.lines as lines
 import time
 import copy
 import collections
 from drawnow import drawnow
 
-def main(startPoint, endPoint):
+#**
+#pack 
+#
+# is defined as [gdict,fig,ax,limits]
+#**
 
-	gdict, fig, ax, limits = initData()
+#main is called by "if __name__ == "__main__":" at the bottom of the file, or by findShortestPath
+def main(startPoint, endPoint, pack):
+	#pack includes the large gdict variable, so save it when you run it the first time. This improves speed tremendously.
 
-	findPathDijkstra(gdict,startPoint,endPoint,ax,limits)
+	if not pack:
+		pack = initData()
+	pass
+	
+	line = lines.Line2D([],[],lw=2,c='red')
+	ax = pack[2]
+	ax.add_line(line)
+	findPathDijkstra(*pack,startPoint,endPoint,line)
 
-	return gdict, fig, ax, limits
+	return pack
 
 pass
 
@@ -27,97 +41,85 @@ pass
 def initData():
 
 	plt.clf()
+
+	#ion is interactive mode on. This makes it so the window doesn't close after processing
 	plt.ion()
 
+	#parse the rectangles
 	limits, rectVects = parseMap()
 
-	#Get data from QT
+	#Get data from the quadtree file
 	gdict = parseQT(limits,rectVects)
 
-	fig = plt.figure(1)
-	plt.scatter(*list(zip(*gdict.keys())),s=1)
-	ax = fig.gca()
+	fig, ax = plotBox(gdict,limits,rectVects)
 
-	ax.set_xlim(limits[0],limits[1])
-	ax.set_ylim(limits[2],limits[3])
-	
-	for rects in rectVects:
-		drawRect(ax,rects)
-	pass
-
-	for i in gdict:
-		for j in gdict[i]:
-			path = [i,j]
-			pl.plotPath(ax,path,linewidth=1)
-		pass
-	pass
-
-	plt.show()
-
-	return gdict, fig, ax, limits
+	####this is pack
+	return [gdict, fig, ax, limits]
 
 pass
 
 
-def findPathDijkstra(gdict,ax,startPoint,endPoint,limits):
+def findPathDijkstra(gdict,fig,ax,limits,startPoint,endPoint,line):
 
 	r1 = findClosestNode(gdict,startPoint)
 	r2 = findClosestNode(gdict,endPoint)
 	
+
 	t1 = time.time()
-	sp = PathOpt.dijkstra(gdict,r1,r2,ax)
+	sp = PathOpt.dijkstra(gdict,r1,r2)
 	t2 = time.time()
 
 	print(t2-t1)
 
-	print(sp)
+	line.set_xdata([p[0] for p in sp[1]])
+	line.set_ydata([p[1] for p in sp[1]])
 
-	path = sp[1]
-	path.insert(0,startPoint)
-	path.append(endPoint)
+	# path = sp[1]
+	# path.insert(0,startPoint)
+	# path.append(endPoint)
 
-	pl.plotPath(ax,path,'red')
-	ax.set_xlim(limits[0],limits[1])
-	ax.set_ylim(limits[2],limits[3])
+	#pl.plotPath(ax,path,'red')
 
 pass
 
 
-def findPathAStar(gdict,startPoint,endPoint,ax,limits):
+def findPathAStar(gdict,fig,ax,limits,startPoint,endPoint,line):
 
 
 	r1 = findClosestNode(gdict,startPoint)
 	r2 = findClosestNode(gdict,endPoint)
 
 	t1 = time.time()
-	sp = PathOpt.AStar(gdict,r1,r2,10)
+	sp = PathOpt.AStar(gdict,r1,r2,1)
 	t2 = time.time()
+
+	print(t2-t1)
+
+	line.set_xdata([p[0] for p in sp[1]])
+	line.set_ydata([p[1] for p in sp[1]])
 
 	#print("(6.25,1.25):{0}".format(gdict[(6.25,1.25)]))
 	#print("(6.25,0.0):{0}".format(gdict[(6.25,0.0)]))
-	path = sp[1]
-	path.insert(0,startPoint)
-	path.append(endPoint)
+	# path = sp[1]
+	# path.insert(0,startPoint)
+	# path.append(endPoint)
 
-	pl.plotPath(ax,path,'red')
-	ax.set_xlim(limits[0],limits[1])
-	ax.set_ylim(limits[2],limits[3])
+	#pl.plotPath(ax,path,'red')
 	
 pass
 
 
-def findPathBoth(gdict,ax,startPoint,endPoint,limits):
+def findPathBoth(gdict,fig,ax,limits,startPoint,endPoint,line):
 
-	findPathAStar(gdict,ax,startPoint,endPoint,limits)
-	findPathDijkstra(gdict,ax,startPoint,endPoint,limits)
+	findPathAStar(gdict,fig,ax,limits,startPoint,endPoint,line)
+	findPathDijkstra(gdict,fig,ax,limits,startPoint,endPoint,line)
 
 pass
 
 
-#Shouldn't be needed as of April 13, 1PM
+#Shouldn't be needed as of April 13, 1PM. We now clean as we instaniate
 def deportIllegals(gdict, rectVects):
 
-	print(len(gdict))
 	toRemove = set()
 	#Remove all points which are inside rectangles
 	for point in gdict:
@@ -315,23 +317,69 @@ def findClosestNode(gdict,p):
 pass
 
 
-def findShortestPath(startPoint,endPoint, gdict={}):
-	return main(startPoint,endPoint)
+def findShortestPath(startPoint,endPoint, pack=[]):
+	return main(startPoint,endPoint,pack)
 pass
 
 
-def findAllPaths():
-	#TODO Find all paths!
-	gdict, fig, ax, limits = initData()
-	findPathAStar(gdict,(8.5,0),(8,7.8),ax,limits)
+def plotBox(gdict,limits,rectVects):
+	fig = plt.figure(1)
+	plt.scatter(*list(zip(*gdict.keys())),s=1)
+	ax = fig.gca()
+
+	ax.set_xlim(limits[0],limits[1])
+	ax.set_ylim(limits[2],limits[3])
 	
+	for rects in rectVects:
+		drawRect(ax,rects)
+	pass
+
+	for i in gdict:
+		for j in gdict[i]:
+			path = [i,j]
+			pl.plotPath(ax,path,linewidth=1)
+		pass
+	pass
+
+	plt.show()
+
+	return fig, ax
+
+pass
+
+
+def findAllPaths(pack = [],needsFigure = False):
+	#TODO Find all paths!
+
+	if not pack:
+		pack = initData()
+	pass
+
+	if needsFigure:
+		limits, rectVects = parseMap()
+		fig, ax = plotBox(pack[0],limits,rectVects)
+		pack = [pack[0], fig, ax, limits]
+	pass
+	fig = pack[1]
+	ax = pack[2]
+	limits = pack[3]
+	line = lines.Line2D([],[],lw=2,c='red')
+	ax.add_line(line)
+	findPathDijkstra(*pack,(0,0),(8,7.8),line)
+	plt.draw()
 	numPaths = 15
 	for i in range(numPaths):
 		k = limits[1]*i/numPaths
-		findPathAStar(gdict,(k,0),(8,7.8),ax,limits)
+		findPathDijkstra(*pack,(k,0),(8,7.8),line)
+
+		#Sometimes this works, sometimes it doesn't... idk.
+		#Calculations are good though.
 		fig.canvas.draw()
 		fig.canvas.flush_events()
 	pass
+
+	return pack
+
 pass
 
 
