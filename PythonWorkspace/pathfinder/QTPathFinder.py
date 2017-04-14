@@ -324,6 +324,8 @@ pass
 
 def plotBox(gdict,limits,rectVects):
 	fig = plt.figure(1)
+
+	#TODO Maybe remove
 	plt.scatter(*list(zip(*gdict.keys())),s=1)
 	ax = fig.gca()
 
