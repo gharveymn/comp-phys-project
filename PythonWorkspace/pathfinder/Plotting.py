@@ -72,6 +72,7 @@ def plotPath(ax, pts, ec='black', linewidth = 2):
 	
 	patch = patches.PathPatch(path, facecolor='none', edgecolor=ec, lw=linewidth)
 	ax.add_patch(patch)
+	
 pass
 
 

@@ -3,10 +3,10 @@ import numpy as np
 from HelperMethods import *
 import Plotting as pl
 import matplotlib.pyplot as plt
-
+import collections
 
 def AStar(graph, startPoint, endPoint, hScalar=1.0):
-	return AStarEval(graph, startPoint, endPoint, hScalar)
+	return AStarEval(graph, startPoint, endPoint, hScalar, visited=[], distances={}, predecessors={})
 pass
 
 
@@ -30,7 +30,6 @@ def AStarEval(graph, current, end, h, visited=[], distances={}, predecessors={})
 		if adjacent not in visited:
 			adjDist = distances.get(adjacent, sys.maxsize)
 			
-			#Trying to figure our the heuristic. Maybe has to do with instantaneous density?
 			#We'll try using the Euclidean dist to our destination.
 			curDist = distances[current] + graph[current][adjacent] + h*distancesq(adjacent, end)
 			if curDist < adjDist:
@@ -50,7 +49,7 @@ def AStarEval(graph, current, end, h, visited=[], distances={}, predecessors={})
 
 pass
 
-def dijkstra(graph, current, end, ax, visited=[], distances={}, predecessors={}):
+def dijkstra(graph, current, end, visited=[], distances={}, predecessors={}):
 	
 	"""Find the shortest path between start and end nodes in a graph using Dijkstra's Algorithm"""
 	# we've found our end node, now find the path to it, and return
@@ -84,5 +83,5 @@ def dijkstra(graph, current, end, ax, visited=[], distances={}, predecessors={})
 	closest = min(notVisited, key=notVisited.get)
 
 	# now we can take the closest node and recurse, making it current
-	return dijkstra(graph, closest, end, ax, visited, distances, predecessors)
+	return dijkstra(graph, closest, end, visited, distances, predecessors)
 pass

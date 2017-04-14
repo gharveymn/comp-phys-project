@@ -7,51 +7,54 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.path as mpath
 import matplotlib.patches as patches
+import matplotlib.animation as animation
 import time
 import copy
+import collections
+from drawnow import drawnow
 
-def main(startPoint, endPoint, gdict):
+def main(startPoint, endPoint):
 
-	plt.ion()
+	gdict, fig, ax, limits = initData()
+
+	findPathDijkstra(gdict,startPoint,endPoint,ax,limits)
+
+	return gdict, fig, ax, limits
+
+pass
+
+
+def initData():
+
 	plt.clf()
-
-	#Get data from QT
-	if not gdict:
-		gdict = parseQT()
-	pass
-
-	fig1 = plt.figure(1)
-	plt.scatter(*list(zip(*gdict.keys())),s=1)
-	ax = fig1.gca()
+	plt.ion()
 
 	limits, rectVects = parseMap()
+
+	#Get data from QT
+	gdict = parseQT(limits,rectVects)
+
+	fig = plt.figure(1)
+	plt.scatter(*list(zip(*gdict.keys())),s=1)
+	ax = fig.gca()
 
 	ax.set_xlim(limits[0],limits[1])
 	ax.set_ylim(limits[2],limits[3])
 	
+	for rects in rectVects:
+		drawRect(ax,rects)
+	pass
+
 	for i in gdict:
 		for j in gdict[i]:
 			path = [i,j]
-
 			pl.plotPath(ax,path,linewidth=1)
-
 		pass
 	pass
 
-	#return
+	plt.show()
 
-	for rects in rectVects:
-		drawRect(ax,rects)
-		pass
-	pass
-
-	plt.scatter(*list(zip(*gdict.keys())),s=1)
-
-	deportIllegals(gdict,rectVects)
-
-	findPathAStar(gdict,ax,startPoint,endPoint,limits)
-
-	return gdict, ax, limits
+	return gdict, fig, ax, limits
 
 pass
 
@@ -67,6 +70,8 @@ def findPathDijkstra(gdict,ax,startPoint,endPoint,limits):
 
 	print(t2-t1)
 
+	print(sp)
+
 	path = sp[1]
 	path.insert(0,startPoint)
 	path.append(endPoint)
@@ -75,20 +80,21 @@ def findPathDijkstra(gdict,ax,startPoint,endPoint,limits):
 	ax.set_xlim(limits[0],limits[1])
 	ax.set_ylim(limits[2],limits[3])
 
-	plt.show()
 pass
 
-def findPathAStar(gdict,ax,startPoint,endPoint,limits):
+
+def findPathAStar(gdict,startPoint,endPoint,ax,limits):
+
 
 	r1 = findClosestNode(gdict,startPoint)
 	r2 = findClosestNode(gdict,endPoint)
 
 	t1 = time.time()
-	sp = PathOpt.AStar(gdict,r1,r2)
+	sp = PathOpt.AStar(gdict,r1,r2,10)
 	t2 = time.time()
 
-	print(t2-t1)
-
+	#print("(6.25,1.25):{0}".format(gdict[(6.25,1.25)]))
+	#print("(6.25,0.0):{0}".format(gdict[(6.25,0.0)]))
 	path = sp[1]
 	path.insert(0,startPoint)
 	path.append(endPoint)
@@ -96,11 +102,7 @@ def findPathAStar(gdict,ax,startPoint,endPoint,limits):
 	pl.plotPath(ax,path,'red')
 	ax.set_xlim(limits[0],limits[1])
 	ax.set_ylim(limits[2],limits[3])
-
-	plt.show()
-
-	return ax
-
+	
 pass
 
 
@@ -112,24 +114,10 @@ def findPathBoth(gdict,ax,startPoint,endPoint,limits):
 pass
 
 
+#Shouldn't be needed as of April 13, 1PM
 def deportIllegals(gdict, rectVects):
 
-	#toRemove = {}
-
-	#Remove all paths which pass though a rectangle
-	# for i in gdict:
-	# 	for j in gdict[i]:
-	# 		centerPoint = scadivtup(addtup(i,j),2)
-	# 		if(isInsideRect(centerPoint,rectVects)):
-	# 			toRemove[i] = j
-	# 		pass
-	# 	pass
-	# pass
-
-	# for i,j in toRemove.items():
-	# 	gdict[i].pop(j)
-	# pass
-
+	print(len(gdict))
 	toRemove = set()
 	#Remove all points which are inside rectangles
 	for point in gdict:
@@ -146,7 +134,6 @@ def deportIllegals(gdict, rectVects):
 		pass
 	pass
 
-	
 	toRemove = set()
 
 	#If i:{} then remove the empty i
@@ -163,27 +150,46 @@ def deportIllegals(gdict, rectVects):
 
 pass
 
-def isInsideRect(p,rectVects):
-	for rect in rectVects:
-				
-		w = rect[0][0]
-		s = rect[0][1]
-		e = rect[2][0]
-		n = rect[2][1]
-		
-		#If the centerpoint falls inside one of the rectangles, add to list for removal
-		if(  				p[1] < n					and \
-				w < p[0]		 and			p[0] < e  	and \
-							p[1] > s						):
-			#-------------------------------------------------------#
-			return True
+
+def isInsideRect(p,rectVects,edgesAreLava=True):
+	if edgesAreLava:
+		for rect in rectVects:
+					
+			w = rect[0][0]
+			s = rect[0][1]
+			e = rect[2][0]
+			n = rect[2][1]
+			
+			#If the centerpoint falls inside one of the rectangles, add to list for removal
+			if(  				p[1] < n					and \
+					w < p[0]		 and			p[0] < e  	and \
+								p[1] > s						):
+				#-------------------------------------------------------#
+				return True
+			pass
+		pass
+	else:
+		for rect in rectVects:
+					
+			w = rect[0][0]
+			s = rect[0][1]
+			e = rect[2][0]
+			n = rect[2][1]
+			
+			#If the centerpoint falls inside one of the rectangles, add to list for removal
+			if(  				p[1] <= n					and \
+					w <= p[0]		 and			p[0] <= e  	and \
+								p[1] >= s						):
+				#-------------------------------------------------------#
+				return True
+			pass
 		pass
 	pass
 	return False
 pass
 
 
-def parseQT():
+def parseQT(limits, rectVects):
 
 	my_file = filePath('tree.txt')
 	if not my_file.is_file():
@@ -193,8 +199,9 @@ def parseQT():
 	file = open('tree.txt', 'r')
 	data = [float(val) for val in file.read().strip().split()]
 
+	gdict = collections.OrderedDict()
 
-	gdict = {}
+	limitRect = [[(limits[0],limits[2]),(limits[1],limits[2]),(limits[1],limits[3]), (limits[0],limits[3])]]
 
 	i = 0
 	while(i < len(data) - 4):
@@ -206,56 +213,56 @@ def parseQT():
 		num_adjacent = int(data[i+4])
 		i += 5
 
-		gdict[(x,y)] = {}
+		if not isInsideRect((x,y),rectVects):
 
-		gdict[(x,y)][(x+l,y)] = l
-		gdict[(x,y)][(x,y+w)] = w
+			if (x,y) not in gdict:
+				gdict[(x,y)] = {}
+			pass
 
-		if (x+w,y) in gdict:
-			gdict[(x+l,y)][(x,y)] = l
-		else:
-			gdict[(x+l,y)] = {(x,y):l}
+			if isInsideRect((x+l,y),limitRect,edgesAreLava=False) and not isInsideRect((x+l,y),rectVects):
+				gdict[(x,y)][(x+l,y)] = l
+				#print("{0}, {1}".format((x,y),(x+l,y)))
+				if (x+l,y) in gdict:
+					gdict[(x+l,y)][(x,y)] = l
+					#print("{0}, {1}".format((x+l,y),(x,y)))
+				else:
+					gdict[(x+l,y)] = {(x,y):l}
+					#print("{0}, {1}".format((x+l,y),(x,y)))
+				pass
+			pass
+
+			if isInsideRect((x,y+w),limitRect,edgesAreLava=False) and not isInsideRect((x,y+w),rectVects):
+				gdict[(x,y)][(x,y+w)] = w
+				#print("{0}, {1}".format((x,y),(x,y+w)))
+				if (x,y+w) in gdict:
+					gdict[(x,y+w)][(x,y)] = w
+					#print("{0}, {1}".format((x,y+w),(x,y)))
+				else:
+					gdict[(x,y+w)] = {(x,y):w}
+					#print("{0}, {1}".format((x,y+w),(x,y)))
+				pass
+			pass
+
+			for j in range(i,i+num_adjacent*4,4):
+				x1 = data[j]
+				y1 = data[j+1]
+				l1 = data[j+2]
+				w1 = data[j+3]
+
+				if not isInsideRect((x1,y1),rectVects):
+					gdict[(x,y)][(x1,y1)] = l1+w1
+					if (x1,y1) in gdict:
+						gdict[(x1,y1)][(x,y)] = l1+w1
+					else:
+						gdict[(x1,y1)] = {(x,y):l1+w1}
+					pass
+				pass
+			pass
 		pass
-
-		if (x,y+l) in gdict:
-			gdict[(x,y+w)][(x,y)] = w
-		else:
-			gdict[(x,y+w)] = {(x,y):w}
-		pass
-		
-
-		#gdict[(x,y)] = {(x+l,y+w):np.sqrt(l**2 + w**2)}
-		for j in range(i,i+num_adjacent*4,4):
-			x1 = data[j]
-			y1 = data[j+1]
-			l1 = data[j+2]
-			w1 = data[j+3]
-			gdict[(x,y)][(x1,y1)] = l1+w1
-			
-
-			#gdict[(x,y)][(x1,y1)] = distancesq((x,y),(x1,y1))
-
-		pass
-
 
 		i += num_adjacent*4
 
 	pass
-
-	# appendables = copy.deepcopy(gdict)
-
-	# #Create new indices using second order coordinates, find neighbors. These will be filtered later.
-	# for i in gdict:
-	# 	for j in gdict[i]:
-	# 		if j not in appendables:
-	# 			appendables[j] = {i:gdict[i][j]}
-	# 		else:
-	# 			appendables[j][i] = gdict[i][j]
-	# 		pass
-	# 	pass
-	# pass
-
-	# gdict = appendables
 				
 	return gdict
 
@@ -284,6 +291,7 @@ def parseMap():
 	pass
 
 	return limits, rectVects
+pass
 
 
 def drawRect(ax,verts,fc='yellow'):
@@ -308,16 +316,26 @@ pass
 
 
 def findShortestPath(startPoint,endPoint, gdict={}):
-	main(startPoint,endPoint,gdict)
+	return main(startPoint,endPoint)
 pass
 
 
-def findAllPaths(gdict,ax,limits):
+def findAllPaths():
 	#TODO Find all paths!
+	gdict, fig, ax, limits = initData()
+	findPathAStar(gdict,(8.5,0),(8,7.8),ax,limits)
+	
+	numPaths = 15
+	for i in range(numPaths):
+		k = limits[1]*i/numPaths
+		findPathAStar(gdict,(k,0),(8,7.8),ax,limits)
+		fig.canvas.draw()
+		fig.canvas.flush_events()
+	pass
 pass
 
 
 if __name__ == "__main__":
 	os.chdir(os.path.dirname(os.path.abspath(__file__)))
-	findShortestPath((0,0),(8,7.8))
+	findAllPaths()
 pass
