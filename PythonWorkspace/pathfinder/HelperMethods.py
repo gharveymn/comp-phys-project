@@ -11,5 +11,5 @@ def scadivtup(t,s): return tuple(map((1./s).__mul__, t))
 def findClosestNode(pointArray, p):
     pointArray = np.asarray(pointArray)
     deltas = pointArray - p
-    return np.argmin( np.einsum('ij,ij->i', deltas, deltas) )
+    return pointArray[np.argmin( np.einsum('ij,ij->i', deltas, deltas) )]
 pass

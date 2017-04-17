@@ -42,7 +42,7 @@ def prepare(pointArray, order, bounds):
 		for i in range(10):
 			for j in range(10):
 				#finalmat[(i,j)] = findClosestNode(pointArray,(bounds[0]+(i+1./2)*delx,bounds[2]+(j+1./2)*dely))
-				finalmat[(i,j)] = pointArray[findClosestNode2(pointArray,(bounds[0]+(i+.5)*delx,bounds[2]+(j+.5)*dely))]
+				finalmat[(i,j)] = findClosestNode2(pointArray,(bounds[0]+(i+.5)*delx,bounds[2]+(j+.5)*dely))
 			pass
 		pass
 		#print("1: {0}".format(time.time() - t))
@@ -86,7 +86,7 @@ def distancesq(r1,r2): return (r2[0]-r1[0])**2 + (r2[1]-r1[1])**2
 def findClosestNode2(pointArray, p):
     pointArray = np.asarray(pointArray)
     deltas = pointArray - p
-    return np.argmin( np.einsum('ij,ij->i', deltas, deltas) )
+    return pointArray[np.argmin( np.einsum('ij,ij->i', deltas, deltas) )]
 pass
 
 
@@ -179,7 +179,7 @@ pass
 def timeReg(pointArray,points):
 	t1 = time.time()
 	for point in points:
-		points[findClosestNode2(points,point)]
+		findClosestNode2(points,point)
 	pass
 	t2 = time.time()
 	return t2-t1
