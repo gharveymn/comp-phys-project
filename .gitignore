@@ -1,5 +1,11 @@
 desktop.ini
 
+.idea*
 .idea/**
 *.asv
+__pycache__
+debug.log
 Path Finding/tree.txt
+CMakeLists.txt
+.vscode*
+MNIST_data*
