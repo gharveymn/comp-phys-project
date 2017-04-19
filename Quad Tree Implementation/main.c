@@ -57,9 +57,10 @@ bool shares_edge(Node* node1, Node* node2);
 bool shares_corner(Node* node1, Node* node2);
 
 //These constants are important in order to avoid memory overflow for high threshold value
-const int qt_threshold = 9;
-const float actual_to_max_children_ratio = 0.75;
-const int max_num_adjacent = 30;
+int qt_threshold = 9;
+float actual_to_max_children_ratio = 0.75;
+int max_num_adjacent = 30;
+char* map_file = "map.txt";
 
 int num_children;
 int max_children;
@@ -70,6 +71,44 @@ Node* root;
 
 int main(int argc, char** args)
 {
+	if (argc < 4)
+	{
+		printf("\nToo few command line args. Using defaults.\n<Map File> <qt_threshold> <actual_to_max_children_ratio> <max_num_adjacent>\n\n");
+	}
+	else
+	{
+		map_file = args[0];
+		int arg = atoi(args[1]);
+		if (arg < 1)
+		{
+			printf("\nInvalid qt_threshold, using default.\n");
+		}
+		else
+		{
+			qt_threshold = arg;
+		}
+
+		arg = atoi(args[2]);
+		if (!(arg > 0))
+		{
+			printf("\nInvalid actual_to_max_children_ratio, using default.\n");
+		}
+		else
+		{
+			actual_to_max_children_ratio = arg;
+		}
+
+		arg = atoi(args[3]);
+		if (arg < 1)
+		{
+			printf("\nInvlid max_num_adjacent, using default.\n");
+		}
+		else
+		{
+			max_num_adjacent = arg;
+		}
+	}
+
 	clock_t start = clock();
 	max_children = pow(4, qt_threshold);
 	num_children = 0;
@@ -396,7 +435,7 @@ void makeAdjacencyLists(Map* map, Node** children)
 }
 void printMap(Map * map)
 {
-	printf("Min Coords: (%f,%f)\n", map->min.x, map->min.y);
+	printf("\nMin Coords: (%f,%f)\n", map->min.x, map->min.y);
 	printf("Max Coords: (%f,%f)\n", map->max.x, map->max.y);
 	printf("# of squares: %d\n", map->numSquares);
 	for (int i = 0; i < map->numSquares; i++)
