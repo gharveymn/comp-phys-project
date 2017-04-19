@@ -52,6 +52,7 @@ void makeAdjacencyLists(Map* map, Node** children);
 void printMap(Map * map);
 void outputTree(Node* node, FILE *fp, Square area);
 void freeTree(Node* node);
+void freePointers();
 bool shares_edge(Node* node1, Node* node2);
 bool shares_corner(Node* node1, Node* node2);
 
@@ -59,18 +60,22 @@ bool shares_corner(Node* node1, Node* node2);
 const int qt_threshold = 9;
 const float actual_to_max_children_ratio = 0.75;
 const int max_num_adjacent = 30;
+
 int num_children;
 int max_children;
 
+Map* map;
+Node** children;
+Node* root;
 
 int main(int argc, char** args)
 {
 	clock_t start = clock();
 	max_children = pow(4, qt_threshold);
 	num_children = 0;
-	Node* children[(int)(actual_to_max_children_ratio*max_children)];
-
-	Map* map = makeMap("map.txt");
+	children = (Node **)malloc((int)(actual_to_max_children_ratio*max_children)*sizeof(Node*));
+	
+	map = makeMap("map.txt");
 	printMap(map);
 	
 	Square root_area;
@@ -78,7 +83,7 @@ int main(int argc, char** args)
 	root_area.corner.y = map->min.y;
 	root_area.l = map->max.x - map->min.x;
 	root_area.w = map->max.y - map->min.y;
-	Node* root = initializeNode(root_area, NULL, 0, ROOT);
+	root = initializeNode(root_area, NULL, 0, ROOT);
 
 	makeQT(root, map, children);
 	makeAdjacencyLists(map, children);
@@ -86,13 +91,12 @@ int main(int argc, char** args)
 	FILE* fp = fopen("tree.txt", "w");
 	outputTree(root, fp, root->square);
 	fclose(fp);
-	free(map);
-	freeTree(root);
-	free(children);
+	freePointers();
 
 	clock_t end = clock();
 	float exec_time = (float)(end - start)/CLOCKS_PER_SEC;
 	printf("Graph Generation Complete after %f seconds.\n", exec_time);
+	exit(EXIT_SUCCESS);
 }
 
 Node* initializeNode(Square area, Node* parent, int depth, int cardinality)
@@ -178,6 +182,7 @@ void makeQT(Node* curr, Map* map, Node** children)
 		if (num_children >= (int)(actual_to_max_children_ratio*max_children))
 		{
 			printf("The ratio of the actual number of children to the maximum number of children is too low, please adjust.\n");
+			freePointers();
 			exit(EXIT_FAILURE);
 		}
 		children[num_children] = curr;
@@ -213,6 +218,7 @@ void makeQT(Node* curr, Map* map, Node** children)
 		if (num_children >= (int)(actual_to_max_children_ratio*max_children))
 		{
 			printf("The ratio of the actual number of children to the maximum number of children is too low, please adjust.\n");
+			freePointers();
 			exit(EXIT_FAILURE);
 		}
 		children[num_children] = curr;
@@ -378,6 +384,7 @@ void makeAdjacencyLists(Map* map, Node** children)
 				if (children[i]->num_adjacent >= max_num_adjacent)
 				{
 					printf("Maximum possible adjacent nodes is too small, please adjust.\nThis limit is in place to help avoid memory overflow.\n");
+					freePointers();
 					exit(EXIT_FAILURE);
 				}
 				children[i]->adjacency_list[children[i]->num_adjacent] = children[j];
@@ -550,5 +557,11 @@ void freeTree(Node* node)
 	{
 		node->children[i] = NULL;
 	}
+}
+void freePointers()
+{
+	free(map);
+	freeTree(root);
+	free(children);
 }
 
