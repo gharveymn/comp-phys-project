@@ -75,7 +75,7 @@ int main(int argc, char** args)
 	num_children = 0;
 	children = (Node **)malloc((int)(actual_to_max_children_ratio*max_children)*sizeof(Node*));
 	
-	map = makeMap("map.txt");
+	map = makeMap("map2.txt");
 	printMap(map);
 	
 	Square root_area;
@@ -364,7 +364,8 @@ Map * makeMap(char* filename)
 		map->squares[count].corner.y = num;
 		fscanf(fp, "%f", &num);
 		map->squares[count].l = num;
-		map->squares[count].w = num; //FOR NOW ASSUME SQUARE OBSTACLES
+		fscanf(fp, "%f", &num);
+		map->squares[count].w = num;
 		count++;
 	}
 	fclose(fp);
@@ -401,8 +402,7 @@ void printMap(Map * map)
 	for (int i = 0; i < map->numSquares; i++)
 	{
 		printf("Corner Coord: (%f,%f)\n", map->squares[i].corner.x, map->squares[i].corner.y);
-		printf("Length: %f\n", map->squares[i].l);
-		//printf("Width: %f\n", map->squares[i].w);
+		printf("Length: %f\tWidth: %f\n", map->squares[i].l, map->squares[i].w);
 	}
 }
 void outputTree(Node* node, FILE *fp, Square area)
