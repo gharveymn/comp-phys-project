@@ -37,7 +37,7 @@ typedef struct node
 {
 	struct node* parent;
 	struct node* children[4];
-	struct node* adjacency_list[8];
+	struct node** adjacency_list;
 	int depth;
 	int num_adjacent;
 	bool contains_object;
@@ -48,29 +48,73 @@ Node* initializeNode(Square area, Node* parent, int depth, int cardinality);
 void makeQT(Node* curr, Map* map, Node** children);
 char contains_object(Map* map, Square area);
 Map * makeMap(char* filename);
-void makeAdjacencyLists(Map* map, int max_children, Node** children);
+void makeAdjacencyLists(Map* map, Node** children);
 void printMap(Map * map);
 void outputTree(Node* node, FILE *fp, Square area);
 void freeTree(Node* node);
+void freePointers();
 bool shares_edge(Node* node1, Node* node2);
+bool shares_corner(Node* node1, Node* node2);
 
-//Maximum depth of the quadtree
-const int qt_threshold = 7;
+//These constants are important in order to avoid memory overflow for high threshold value
+int qt_threshold = 9;
+float actual_to_max_children_ratio = 0.75;
+int max_num_adjacent = 30;
+char* map_file = "map.txt";
+
 int num_children;
+int max_children;
+
+Map* map;
+Node** children;
+Node* root;
 
 int main(int argc, char** args)
 {
-	clock_t start = clock();
-	int max_children = pow(4, qt_threshold);
-	num_children = 0;
-	Node* children[max_children];
-
-	for (int i = 0; i < max_children; i++)
+	if (argc < 4)
 	{
-		children[i] = (Node *)malloc(max_children*sizeof(Node));
+		printf("\nToo few command line args. Using defaults.\n<Map File> <qt_threshold> <actual_to_max_children_ratio> <max_num_adjacent>\n\n");
+	}
+	else
+	{
+		map_file = args[0];
+		int arg = atoi(args[1]);
+		if (arg < 1)
+		{
+			printf("\nInvalid qt_threshold, using default.\n");
+		}
+		else
+		{
+			qt_threshold = arg;
+		}
+
+		arg = atoi(args[2]);
+		if (!(arg > 0))
+		{
+			printf("\nInvalid actual_to_max_children_ratio, using default.\n");
+		}
+		else
+		{
+			actual_to_max_children_ratio = arg;
+		}
+
+		arg = atoi(args[3]);
+		if (arg < 1)
+		{
+			printf("\nInvlid max_num_adjacent, using default.\n");
+		}
+		else
+		{
+			max_num_adjacent = arg;
+		}
 	}
 
-	Map* map = makeMap("map.txt");
+	clock_t start = clock();
+	max_children = pow(4, qt_threshold);
+	num_children = 0;
+	children = (Node **)malloc((int)(actual_to_max_children_ratio*max_children)*sizeof(Node*));
+	
+	map = makeMap("map2.txt");
 	printMap(map);
 	
 	Square root_area;
@@ -78,20 +122,20 @@ int main(int argc, char** args)
 	root_area.corner.y = map->min.y;
 	root_area.l = map->max.x - map->min.x;
 	root_area.w = map->max.y - map->min.y;
-	Node* root = initializeNode(root_area, NULL, 0, ROOT);
-	
+	root = initializeNode(root_area, NULL, 0, ROOT);
+
 	makeQT(root, map, children);
-	makeAdjacencyLists(map, max_children, children);
+	makeAdjacencyLists(map, children);
 
 	FILE* fp = fopen("tree.txt", "w");
 	outputTree(root, fp, root->square);
 	fclose(fp);
-	free(map);
-	freeTree(root);
+	freePointers();
 
 	clock_t end = clock();
 	float exec_time = (float)(end - start)/CLOCKS_PER_SEC;
 	printf("Graph Generation Complete after %f seconds.\n", exec_time);
+	exit(EXIT_SUCCESS);
 }
 
 Node* initializeNode(Square area, Node* parent, int depth, int cardinality)
@@ -104,10 +148,7 @@ Node* initializeNode(Square area, Node* parent, int depth, int cardinality)
 	ret->num_adjacent = 0;
 
 	//initialize adjacency list
-	for (int j = 0; j < 8; j++)
-	{
-		ret->adjacency_list[j] = (Node *)malloc(sizeof(Node));
-	}
+	ret->adjacency_list = (Node **)malloc((max_num_adjacent)*sizeof(Node *));
 
 	if (cardinality == TOP_LEFT)
 	{
@@ -177,12 +218,16 @@ void makeQT(Node* curr, Map* map, Node** children)
 		{
 			curr->children[i] = NULL;
 		}
+		if (num_children >= (int)(actual_to_max_children_ratio*max_children))
+		{
+			printf("The ratio of the actual number of children to the maximum number of children is too low, please adjust.\n");
+			freePointers();
+			exit(EXIT_FAILURE);
+		}
 		children[num_children] = curr;
 		num_children++;
-		return;
 	}
-
-	if (contains_object(map, curr->square))
+	else if (contains_object(map, curr->square))
 	{
 		curr->contains_object = 1;
 
@@ -209,6 +254,14 @@ void makeQT(Node* curr, Map* map, Node** children)
 		{
 			curr->children[i] = NULL;
 		}
+		if (num_children >= (int)(actual_to_max_children_ratio*max_children))
+		{
+			printf("The ratio of the actual number of children to the maximum number of children is too low, please adjust.\n");
+			freePointers();
+			exit(EXIT_FAILURE);
+		}
+		children[num_children] = curr;
+		num_children++;
 	}
 }
 /*contains_object checks if a given area contains an object
@@ -241,68 +294,79 @@ char contains_object(Map* map, Square area)
 		obj_min.y = curr.corner.y;
 		
 		//Check if the left side is bounded by the area
-		if (obj_min.x >= area.corner.x && obj_min.x <= area.corner.x + l)
+		if (obj_min.x >= area.corner.x && obj_min.x < area.corner.x + l)
 		{
-			if(obj_max.y >= area.corner.y + w && obj_min.y <= area.corner.y + w)
+			if(obj_max.y >= area.corner.y + w && obj_min.y < area.corner.y + w)
 			{
 				leftBounded = TRUE;
 				break;
 			}
-			else if (obj_min.y <= area.corner.y && obj_max.y >= area.corner.y)
+			else if (obj_min.y <= area.corner.y && obj_max.y > area.corner.y)
 			{
 				leftBounded = TRUE;
+				break;
 			}
 			else if (obj_min.y >= area.corner.y && obj_max.y <= area.corner.y + w)
 			{
 				leftBounded = TRUE;
+				break;
 			}
 		}
 		//Check if the right side is bounded by the area
-		else if (obj_max.x >= area.corner.x && obj_max.x <= area.corner.x + l)
+		else if (obj_max.x > area.corner.x && obj_max.x <= area.corner.x + l)
 		{
-			if(obj_max.y >= area.corner.y + w && obj_min.y <= area.corner.y + w)
+			if(obj_max.y >= area.corner.y + w && obj_min.y < area.corner.y + w)
 			{
 				rightBounded = TRUE;
+				break;
 			}
-			else if (obj_min.y <= area.corner.y && obj_max.y >= area.corner.y)
+			else if (obj_min.y <= area.corner.y && obj_max.y > area.corner.y)
 			{
 				rightBounded = TRUE;
+				break;
 			}
 			else if (obj_min.y >= area.corner.y && obj_max.y <= area.corner.y + w)
 			{
 				rightBounded = TRUE;
+				break;
 			}
 		}
 		//Check if the top side is bounded by the area
-		else if (obj_max.y >= area.corner.y && obj_max.y <= area.corner.y + w)
+		else if (obj_max.y > area.corner.y && obj_max.y <= area.corner.y + w)
 		{
-			if (obj_min.x <= area.corner.x && obj_max.x >= area.corner.x)
+			if (obj_min.x <= area.corner.x && obj_max.x > area.corner.x)
 			{
 				topBounded = TRUE;
+				break;
 			}
-			else if (obj_max.x >= area.corner.x + l && obj_min.x <= area.corner.x + l)
+			else if (obj_max.x >= area.corner.x + l && obj_min.x < area.corner.x + l)
 			{
 				topBounded = TRUE;
+				break;
 			}
 			else if (obj_min.x >= area.corner.x && obj_max.x <= area.corner.x + l)
 			{
 				topBounded = TRUE;
+				break;
 			}
 		}
 		//Check if the bottom side is bounded by the area
-		else if (obj_min.y >= area.corner.y && obj_min.y <= area.corner.y + w)
+		else if (obj_min.y >= area.corner.y && obj_min.y < area.corner.y + w)
 		{
-			if (obj_min.x <= area.corner.x && obj_max.x >= area.corner.x)
+			if (obj_min.x <= area.corner.x && obj_max.x > area.corner.x)
 			{
 				bottomBounded = TRUE;
+				break;
 			}
-			else if (obj_max.x >= area.corner.x + l && obj_min.x <= area.corner.x + l)
+			else if (obj_max.x >= area.corner.x + l && obj_min.x < area.corner.x + l)
 			{
 				bottomBounded = TRUE;
+				break;
 			}
 			else if (obj_min.x >= area.corner.x && obj_max.x <= area.corner.x + l)
 			{
 				bottomBounded = TRUE;
+				break;
 			}
 		}
 	}
@@ -316,7 +380,6 @@ Map * makeMap(char* filename)
 	fp = fopen(filename, "r+");
 	float num;
 	
-
 	Map* map = (Map *)malloc(sizeof(Map));
 	
 	fscanf(fp, "%f", &num);
@@ -340,20 +403,30 @@ Map * makeMap(char* filename)
 		map->squares[count].corner.y = num;
 		fscanf(fp, "%f", &num);
 		map->squares[count].l = num;
-		map->squares[count].w = num; //FOR NOW ASSUME SQUARE OBSTACLES
+		fscanf(fp, "%f", &num);
+		map->squares[count].w = num;
 		count++;
 	}
 	fclose(fp);
 	return map;
 }
-void makeAdjacencyLists(Map* map, int max_children, Node** children)
+void makeAdjacencyLists(Map* map, Node** children)
 {
 	for (int i = 0; i < num_children; i++)
 	{
 		for (int j = 0; j < num_children; j++)
 		{
-			if (j != i && shares_edge(children[i], children[j]) && !contains_object(map, children[j]->square))
+			//if the ith and jth children share either an edge or a corner, 
+			//and the jth child does not contain an object, 
+			//then assuming j != i, the jth child is adjacent to the ith
+			if (j != i && (shares_edge(children[i], children[j]) || shares_corner(children[i], children[j])) && !contains_object(map, children[j]->square))
 			{
+				if (children[i]->num_adjacent >= max_num_adjacent)
+				{
+					printf("Maximum possible adjacent nodes is too small, please adjust.\nThis limit is in place to help avoid memory overflow.\n");
+					freePointers();
+					exit(EXIT_FAILURE);
+				}
 				children[i]->adjacency_list[children[i]->num_adjacent] = children[j];
 				children[i]->num_adjacent++;
 			}
@@ -362,14 +435,13 @@ void makeAdjacencyLists(Map* map, int max_children, Node** children)
 }
 void printMap(Map * map)
 {
-	printf("Min Coords: (%f,%f)\n", map->min.x, map->min.y);
+	printf("\nMin Coords: (%f,%f)\n", map->min.x, map->min.y);
 	printf("Max Coords: (%f,%f)\n", map->max.x, map->max.y);
 	printf("# of squares: %d\n", map->numSquares);
 	for (int i = 0; i < map->numSquares; i++)
 	{
 		printf("Corner Coord: (%f,%f)\n", map->squares[i].corner.x, map->squares[i].corner.y);
-		printf("Length: %f\n", map->squares[i].l);
-		//printf("Width: %f\n", map->squares[i].w);
+		printf("Length: %f\tWidth: %f\n", map->squares[i].l, map->squares[i].w);
 	}
 }
 void outputTree(Node* node, FILE *fp, Square area)
@@ -450,14 +522,14 @@ bool shares_edge(Node* node1, Node* node2)
 	{
 		if (node1->square.w <= node2->square.w)
 		{
-			if (top1 >= top2 && bottom1 <= bottom2)
+			if (top1 <= top2 && bottom1 >= bottom2)
 			{
 				has_shared_edge = TRUE;
 			}
 		}
 		else if (node2->square.w < node1->square.w)
 		{
-			if (top2 >= top1 && bottom2 <= bottom1)
+			if (top2 <= top1 && bottom2 >= bottom1)
 			{
 				has_shared_edge = TRUE;
 			}
@@ -465,6 +537,46 @@ bool shares_edge(Node* node1, Node* node2)
 	}
 
 	return has_shared_edge;
+}
+bool shares_corner(Node* node1, Node* node2)
+{
+	Point corners1[4];
+	//bottom left
+	corners1[0] = node1->square.corner;
+	//top left
+	corners1[1].x = node1->square.corner.x;
+	corners1[1].y = node1->square.corner.y + node1->square.w;
+	//top right
+	corners1[2].x = node1->square.corner.x + node1->square.l;
+	corners1[2].y = node1->square.corner.y + node1->square.w;
+	//bottom right
+	corners1[3].x = node1->square.corner.x + node1->square.l;
+	corners1[3].y = node1->square.corner.y;
+
+	Point corners2[4];
+	//bottom left
+	corners2[0] = node2->square.corner;
+	//top left
+	corners2[1].x = node2->square.corner.x;
+	corners2[1].y = node2->square.corner.y + node2->square.w;
+	//top right
+	corners2[2].x = node2->square.corner.x + node2->square.l;
+	corners2[2].y = node2->square.corner.y + node2->square.w;
+	//bottom right
+	corners2[3].x = node2->square.corner.x + node2->square.l;
+	corners2[3].y = node2->square.corner.y;
+
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			if (corners1[i].x == corners2[j].x && corners1[i].y == corners2[j].y)
+			{
+				return TRUE;
+			}
+		}
+	}
+	return FALSE;
 }
 void freeTree(Node* node)
 {
@@ -484,5 +596,11 @@ void freeTree(Node* node)
 	{
 		node->children[i] = NULL;
 	}
+}
+void freePointers()
+{
+	free(map);
+	freeTree(root);
+	free(children);
 }
 

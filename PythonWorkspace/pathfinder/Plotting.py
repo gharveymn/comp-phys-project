@@ -6,6 +6,7 @@ import matplotlib.ticker as mt
 import matplotlib.path as mpath
 import matplotlib.patches as patches
 
+
 def plot2dHeatMap(fig, x, y, z):
 	'''z is a 2d grid; x and y are implicit linspaces'''
 	
@@ -65,6 +66,7 @@ def plot3dHeatMap(fig, x, y, z):
 
 pass
 
+
 def plotPath(ax, pts, ec='black', linewidth = 2):
 	
 	codes = [mpath.Path.MOVETO] + [mpath.Path.LINETO]*(len(pts)-1)
@@ -73,6 +75,50 @@ def plotPath(ax, pts, ec='black', linewidth = 2):
 	patch = patches.PathPatch(path, facecolor='none', edgecolor=ec, lw=linewidth)
 	ax.add_patch(patch)
 	
+pass
+
+
+def plotRect(ax,verts,fc='yellow'):
+
+	codes = [mpath.Path.MOVETO,
+         mpath.Path.LINETO,
+         mpath.Path.LINETO,
+         mpath.Path.LINETO,
+         mpath.Path.CLOSEPOLY,
+         ]
+
+	path = mpath.Path(verts, codes)
+
+	patch = patches.PathPatch(path, facecolor=fc, lw=1)
+	ax.add_patch(patch)
+	
+pass
+
+def plotBox(gdict,limits,rectVects):
+	fig = plt.figure(1)
+
+	#TODO Maybe remove
+	plt.scatter(*list(zip(*gdict.keys())),s=1)
+	ax = fig.gca()
+
+	ax.set_xlim(limits[0],limits[1])
+	ax.set_ylim(limits[2],limits[3])
+	
+	for rects in rectVects:
+		plotRect(ax,rects)
+	pass
+
+	for i in gdict:
+		for j in gdict[i]:
+			path = [i,j]
+			plotPath(ax,path,linewidth=1)
+		pass
+	pass
+
+	plt.show()
+
+	return fig, ax
+
 pass
 
 

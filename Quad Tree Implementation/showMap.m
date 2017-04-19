@@ -40,5 +40,5 @@ while i < size(data,1) - 4
 %         rectangle('Position', [x1 y1 l1 w1], 'FaceColor', colours(mod(i,4) + 1), 'EdgeColor', 'k');
 %     end;
     i = i + num_adjacent*4;
-    rectangle('Position', [x y l w], 'FaceColor', 'w');
+    rectangle('Position', [x y l w], 'FaceColor', 'none');
 end;
