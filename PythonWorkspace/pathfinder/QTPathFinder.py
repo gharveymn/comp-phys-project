@@ -81,7 +81,7 @@ def findPath(gdict, fig, ax, limits, startPoint, endPoint, line, type):
 	r1 = Helper.findClosestNode(list(zip(*zip(*gdict.keys()))), startPoint)
 	r2 = Helper.findClosestNode(list(zip(*zip(*gdict.keys()))), endPoint)
 
-	print(gdict[(10,0)])
+	#print(gdict[(10,0)])
 	sp = PathOptimization.dijkstra(gdict, r1, r2)
 	try:
 		t1 = time.time()
@@ -92,7 +92,7 @@ def findPath(gdict, fig, ax, limits, startPoint, endPoint, line, type):
 		pass
 		t2 = time.time()
 
-		print(t2 - t1)
+		print("Time taken: {0} ms".format(t2 - t1))
 
 		line.set_xdata([p[0] for p in sp[1]])
 		line.set_ydata([p[1] for p in sp[1]])
@@ -150,5 +150,5 @@ pass
 
 if __name__ == "__main__":
 	#findAllPaths()
-	findShortestPath((0,0), (8,7.8))
+	findShortestPath((10,0), (8,7.8))
 pass

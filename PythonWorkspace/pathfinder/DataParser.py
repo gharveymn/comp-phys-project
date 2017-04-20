@@ -43,10 +43,10 @@ def parseQT(limits, rectVects):
 				gdict[(x,y)] = {}
 			pass
 
-			addAdjacentEdge(x,y,l,0,limitRect,rectVects,gdict)
-			addAdjacentEdge(x,y,-l,0,limitRect,rectVects,gdict)
-			addAdjacentEdge(x,y,0,w,limitRect,rectVects,gdict)
-			addAdjacentEdge(x,y,0,-w,limitRect,rectVects,gdict)
+			# addAdjacentEdge(x,y,l,0,limitRect,rectVects,gdict)
+			# addAdjacentEdge(x,y,-l,0,limitRect,rectVects,gdict)
+			# addAdjacentEdge(x,y,0,w,limitRect,rectVects,gdict)
+			# addAdjacentEdge(x,y,0,-w,limitRect,rectVects,gdict)
 
 			for j in range(i,i+num_adjacent*4,4):
 				x1 = data[j]
@@ -69,25 +69,10 @@ def parseQT(limits, rectVects):
 		i += num_adjacent*4
 
 	pass
-				
+
+	clean(gdict,rectVects)
 	return gdict
 
-pass
-
-def addAdjacentEdge(x,y,delx,dely,limitRect,rectVects,gdict):
-	r = (x+delx,y+dely)
-	if Helper.isInsideRect(r,limitRect,edgesAreLava=False) and not Helper.isInsideRect(r,rectVects):
-		dist = delx*delx + dely*dely
-		gdict[(x,y)][r] = dist
-		#print("{0}, {1}".format((x,y),(x,y+w)))
-		if r in gdict:
-			gdict[r][(x,y)] = dist
-			#print("{0}, {1}".format((x,y+w),(x,y)))
-		else:
-			gdict[r] = {(x,y):dist}
-			#print("{0}, {1}".format((x,y+w),(x,y)))
-		pass
-	pass
 pass
 
 
@@ -96,7 +81,7 @@ def parseMap():
 	try:
 		file = open('QTData/map2.txt', 'r')
 	except IOError:
-		print("QTData/map.txt does not exist! Have you created it yet?")
+		print("QTData/map2.txt does not exist! Have you created it yet?")
 		raise
 	pass
 
@@ -121,4 +106,74 @@ def parseMap():
 	pass
 
 	return limits, rectVects
+pass
+
+
+def addAdjacentEdge(x,y,delx,dely,limitRect,rectVects,gdict):
+	r = (x+delx,y+dely)
+	if Helper.isInsideRect(r,limitRect,edgesAreLava=False) and not Helper.isInsideRect(r,rectVects):
+		dist = delx*delx + dely*dely
+		gdict[(x,y)][r] = dist
+		#print("{0}, {1}".format((x,y),(x,y+w)))
+		if r in gdict:
+			gdict[r][(x,y)] = dist
+			#print("{0}, {1}".format((x,y+w),(x,y)))
+		else:
+			gdict[r] = {(x,y):dist}
+			#print("{0}, {1}".format((x,y+w),(x,y)))
+		pass
+	pass
+pass
+
+def clean(gdict,rectVects):
+
+	# removalSet = []
+
+	# for fromKey in gdict:
+	# 	for toKey in gdict[fromKey]:
+	# 		midpoint = Helper.scadivtup(Helper.addtup(fromKey,toKey),2)
+	# 		if Helper.isInsideRect(midpoint,rectVects):
+	# 			removalSet += [toKey]
+	# 		pass
+	# 	pass
+	# pass
+
+	# removeKeys(gdict,removalSet)
+
+	removalSet = []
+
+	#Make sure we don't have keys pointing to nothing
+	for key in gdict:
+		if not gdict[key]:
+			removalSet += [key]
+		pass
+	pass
+
+	for rm in removalSet:
+		del gdict[rm]
+	pass
+
+	removalSet = set()
+
+	#Likewise make sure this is true on the second level
+	for secondLevel in gdict.values():
+		for secondaryKey in secondLevel:
+			if secondaryKey not in gdict:
+				removalSet.add(secondaryKey)
+			pass
+		pass
+	pass
+
+	
+	removeKeys(gdict,removalSet)
+
+
+pass
+
+def removeKeys(gdict,removalSet):
+	for rm in removalSet:
+		for secondLevel in gdict.values():
+			secondLevel.pop(rm, None)
+		pass
+	pass
 pass
