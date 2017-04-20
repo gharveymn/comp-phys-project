@@ -77,8 +77,8 @@ int main(int argc, char** args)
 	}
 	else
 	{
-		map_file = args[0];
-		int arg = atoi(args[1]);
+		map_file = args[1];
+		int arg = atoi(args[2]);
 		if (arg < 1)
 		{
 			printf("\nInvalid qt_threshold, using default.\n");
@@ -88,17 +88,17 @@ int main(int argc, char** args)
 			qt_threshold = arg;
 		}
 
-		arg = atoi(args[2]);
-		if (!(arg > 0))
+		float argf = atof(args[3]);
+		if (!(argf > 0))
 		{
 			printf("\nInvalid actual_to_max_children_ratio, using default.\n");
 		}
 		else
 		{
-			actual_to_max_children_ratio = arg;
+			actual_to_max_children_ratio = argf;
 		}
 
-		arg = atoi(args[3]);
+		arg = atoi(args[4]);
 		if (arg < 1)
 		{
 			printf("\nInvlid max_num_adjacent, using default.\n");
@@ -221,6 +221,7 @@ void makeQT(Node* curr, Map* map, Node** children)
 		if (num_children >= (int)(actual_to_max_children_ratio*max_children))
 		{
 			printf("The ratio of the actual number of children to the maximum number of children is too low, please adjust.\n");
+			printf("\nnum_children: %f\n(int)(actual_to_max_children_ratio*max_children)): %f", num_children, (int)(actual_to_max_children_ratio*max_children));
 			freePointers();
 			exit(EXIT_FAILURE);
 		}
@@ -257,6 +258,7 @@ void makeQT(Node* curr, Map* map, Node** children)
 		if (num_children >= (int)(actual_to_max_children_ratio*max_children))
 		{
 			printf("The ratio of the actual number of children to the maximum number of children is too low, please adjust.\n");
+			printf("\nnum_children: %f\n(int)(actual_to_max_children_ratio*max_children)): %f", num_children, (int)(actual_to_max_children_ratio*max_children));
 			freePointers();
 			exit(EXIT_FAILURE);
 		}

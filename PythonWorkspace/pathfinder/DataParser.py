@@ -43,29 +43,10 @@ def parseQT(limits, rectVects):
 				gdict[(x,y)] = {}
 			pass
 
-			if Helper.isInsideRect((x+l,y),limitRect,edgesAreLava=False) and not Helper.isInsideRect((x+l,y),rectVects):
-				gdict[(x,y)][(x+l,y)] = l
-				#print("{0}, {1}".format((x,y),(x+l,y)))
-				if (x+l,y) in gdict:
-					gdict[(x+l,y)][(x,y)] = l
-					#print("{0}, {1}".format((x+l,y),(x,y)))
-				else:
-					gdict[(x+l,y)] = {(x,y):l}
-					#print("{0}, {1}".format((x+l,y),(x,y)))
-				pass
-			pass
-
-			if Helper.isInsideRect((x,y+w),limitRect,edgesAreLava=False) and not Helper.isInsideRect((x,y+w),rectVects):
-				gdict[(x,y)][(x,y+w)] = w
-				#print("{0}, {1}".format((x,y),(x,y+w)))
-				if (x,y+w) in gdict:
-					gdict[(x,y+w)][(x,y)] = w
-					#print("{0}, {1}".format((x,y+w),(x,y)))
-				else:
-					gdict[(x,y+w)] = {(x,y):w}
-					#print("{0}, {1}".format((x,y+w),(x,y)))
-				pass
-			pass
+			addAdjacentEdge(x,y,l,0,limitRect,rectVects,gdict)
+			addAdjacentEdge(x,y,-l,0,limitRect,rectVects,gdict)
+			addAdjacentEdge(x,y,0,w,limitRect,rectVects,gdict)
+			addAdjacentEdge(x,y,0,-w,limitRect,rectVects,gdict)
 
 			for j in range(i,i+num_adjacent*4,4):
 				x1 = data[j]
@@ -74,11 +55,12 @@ def parseQT(limits, rectVects):
 				w1 = data[j+3]
 
 				if not Helper.isInsideRect((x1,y1),rectVects):
-					gdict[(x,y)][(x1,y1)] = l1+w1
+					dist = l1*l1 + w1*w1
+					gdict[(x,y)][(x1,y1)] = dist
 					if (x1,y1) in gdict:
-						gdict[(x1,y1)][(x,y)] = l1+w1
+						gdict[(x1,y1)][(x,y)] = dist
 					else:
-						gdict[(x1,y1)] = {(x,y):l1+w1}
+						gdict[(x1,y1)] = {(x,y):dist}
 					pass
 				pass
 			pass
@@ -90,6 +72,22 @@ def parseQT(limits, rectVects):
 				
 	return gdict
 
+pass
+
+def addAdjacentEdge(x,y,delx,dely,limitRect,rectVects,gdict):
+	r = (x+delx,y+dely)
+	if Helper.isInsideRect(r,limitRect,edgesAreLava=False) and not Helper.isInsideRect(r,rectVects):
+		dist = delx*delx + dely*dely
+		gdict[(x,y)][r] = dist
+		#print("{0}, {1}".format((x,y),(x,y+w)))
+		if r in gdict:
+			gdict[r][(x,y)] = dist
+			#print("{0}, {1}".format((x,y+w),(x,y)))
+		else:
+			gdict[r] = {(x,y):dist}
+			#print("{0}, {1}".format((x,y+w),(x,y)))
+		pass
+	pass
 pass
 
 
