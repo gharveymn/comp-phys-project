@@ -42,7 +42,7 @@ def calculatePaths(x,y,z,avgDensity,gdict,allPoints,indsPtsMap,ptsIndsMap,startP
 	r2 = min(gdict.keys(), key=lambda x: distancesq(x, endPoint))
 	
 	start = time.time()
-	sp = PathOpt.AStar(gdict,r1,r2,avgDensity, x[0][1] - x[0][0])
+	sp = PathOpt.AStar(gdict,r1,r2)
 	end = time.time()
 	print("Best path found (A*) in {0} seconds.".format(end-start))
 	
