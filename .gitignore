@@ -9,3 +9,7 @@ Path Finding/tree.txt
 CMakeLists.txt
 .vscode*
 MNIST_data*
+
+*.aux
+*.log
+*.synctex.gz

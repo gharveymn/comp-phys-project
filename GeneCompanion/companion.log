@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9) (preloaded format=pdflatex 2016.9.8)  21 APR 2017 15:54
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9) (preloaded format=pdflatex 2016.9.8)  21 APR 2017 16:51
 entering extended mode
 **companion.tex
 (companion.tex
@@ -2789,25 +2789,45 @@ Package microtype Info: Loading generic settings for font family
 (microtype)             `cmtt' (encoding: OT1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
+
+<figure_1.png, id=4, 462.528pt x 342.5598pt>
+File: figure_1.png Graphic file (type png)
+ <use figure_1.png>
+Package pdftex.def Info: figure_1.png used on input line 21.
+(pdftex.def)             Requested size: 150.32504pt x 111.33583pt.
+
+<figure_4.png, id=6, 462.528pt x 342.5598pt>
+File: figure_4.png Graphic file (type png)
+ <use figure_4.png>
+Package pdftex.def Info: figure_4.png used on input line 28.
+(pdftex.def)             Requested size: 150.32504pt x 111.33583pt.
+
+<figure_5.png, id=7, 462.528pt x 342.5598pt>
+File: figure_5.png Graphic file (type png)
+ <use figure_5.png>
+Package pdftex.def Info: figure_5.png used on input line 35.
+(pdftex.def)             Requested size: 150.32504pt x 111.33583pt.
  [1{C:/Users/Gene/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}
 
-] (companion.aux) ) 
+ <./figure_1.png> <./figure_4.png> <./figure_5.png>] (companion.aux) ) 
 Here is how much of TeX's memory you used:
- 42229 strings out of 493673
- 932268 string characters out of 3141534
- 1100034 words of memory out of 3000000
- 44786 multiletter control sequences out of 15000+200000
- 21546 words of font info for 86 fonts, out of 3000000 for 9000
+ 42274 strings out of 493673
+ 932797 string characters out of 3141534
+ 1103034 words of memory out of 3000000
+ 44806 multiletter control sequences out of 15000+200000
+ 22573 words of font info for 97 fonts, out of 3000000 for 9000
  1025 hyphenation exceptions out of 8191
  62i,8n,70p,10537b,380s stack positions out of 5000i,500n,10000p,200000b,50000s
-<C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfon
-ts/cm/cmb10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/
-cm/cmr10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/
-cmr12.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr
-17.pfb>
-Output written on companion.pdf (1 page, 41161 bytes).
+<C:/Progr
+am Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmb10.pfb><C:/Program 
+Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Fil
+es (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files 
+(x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Program Files (x8
+6)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files (x86)/
+MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti10.pfb>
+Output written on companion.pdf (1 page, 172202 bytes).
 PDF statistics:
- 25 PDF objects out of 1000 (max. 8388607)
+ 40 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 18957 words of extra memory for PDF output out of 20736 (max. 10000000)
+ 21020 words of extra memory for PDF output out of 24883 (max. 10000000)
 
