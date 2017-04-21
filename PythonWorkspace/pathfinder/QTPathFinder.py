@@ -47,6 +47,8 @@ def findShortestPath(startPoint, endPoint, pack=[]):
 	#In Python an asterisk (*) unpacks a tuple or list, so like: function(*[1,2,3]) <=> function(1,2,3)
 	findPath(*pack, startPoint, endPoint, line, 'dijkstra')
 
+	plt.draw()
+
 	return pack
 
 
@@ -76,24 +78,44 @@ pass
 
 
 def findPath(gdict, fig, ax, limits, startPoint, endPoint, line, type):
+	'''findPath
+
+		Finds the shortest path with the algorithm specified by 'type'.
+
+		calls:
+			Helper.findClosestNode()	finds the valid node closest to specified start/end points
+			PathOptimizer.*()		path optimization algorithm
+
+		args:
+			gdict 		 		edge graph with distances
+			fig					a figure
+			ax					an axis
+			limits				the limits of the bounding box
+			startPoint			starting point of the path
+			endPoint				end point of the path
+			line					2d matplotlib line object
+			type					algorithm type, accepts 'd[ijkstra]' or 'a[star]'
+		return:
+			None
+
+	'''
 
 	#The big ugly function gets the keys into a list of tuples [(1,2),(3,4),...]
 	r1 = Helper.findClosestNode(list(zip(*zip(*gdict.keys()))), startPoint)
 	r2 = Helper.findClosestNode(list(zip(*zip(*gdict.keys()))), endPoint)
 
-	#print(gdict[(10,0)])
-	sp = PathOptimization.dijkstra(gdict, r1, r2)
 	try:
 		t1 = time.time()
-		if(type.lower().startswith('a')):
+		if (type.lower().startswith('a')):
 			sp = PathOptimization.AStar(gdict, r1, r2)
-		elif(type.lower().startswith('d')):
+		elif (type.lower().startswith('d')):
 			sp = PathOptimization.dijkstra(gdict, r1, r2)
 		pass
 		t2 = time.time()
 
-		print("Time taken: {0} ms".format(t2 - t1))
+		print("Time taken: {0} s".format(t2 - t1))
 
+		# sp contains sp[0] - the path length, sp[1] the nodes taken; we set line data to the nodes
 		line.set_xdata([p[0] for p in sp[1]])
 		line.set_ydata([p[1] for p in sp[1]])
 	except:
@@ -106,14 +128,35 @@ pass
 
 
 def findPathBoth(gdict, fig, ax, limits, startPoint, endPoint, line):
+	'''findPathBoth
+		Finds the path using both algorithms.
 
-	findPath(gdict, fig, ax, limits, startPoint, endPoint, line,'a')
-	findPath(gdict, fig, ax, limits, startPoint, endPoint, line,'d')
+		calls:
+			findPath()		finds the shortest path with the algorithm specified by 'type'
+		args:
+			same as findPath
+		return:
+			None
+	'''
+
+	findPath(gdict, fig, ax, limits, startPoint, endPoint, line, 'a')
+	findPath(gdict, fig, ax, limits, startPoint, endPoint, line, 'd')
+
 
 pass
 
 
 def findAllPaths(pack=[], needsFigure=False):
+	'''
+		Finds all paths between nodes from the quadtree
+
+		Also tries to to live plotting, but only sometimes works.
+		
+		calls:
+			initData()		Initializes gdict, calls the data parser
+			plotBox()			plots the main box
+			
+	'''
 	#TODO Find all paths!
 
 	if not pack:
@@ -125,13 +168,14 @@ def findAllPaths(pack=[], needsFigure=False):
 		fig, ax = Plotting.plotBox(pack[0], limits, rectVects)
 		pack = [pack[0], fig, ax, limits]
 	pass
+
 	fig = pack[1]
 	ax = pack[2]
 	limits = pack[3]
+
 	line = lines.Line2D([], [], lw=2, c='red')
 	ax.add_line(line)
-	findPath(*pack, (0, 0), (8, 7.8), line, 'dijkstra')
-	plt.draw()
+
 	numPaths = 15
 	for i in range(numPaths):
 		k = limits[1] * i / numPaths
@@ -150,5 +194,5 @@ pass
 
 if __name__ == "__main__":
 	#findAllPaths()
-	findShortestPath((10,0), (8,7.8))
+	findShortestPath((10, 0), (8, 7.8))
 pass
