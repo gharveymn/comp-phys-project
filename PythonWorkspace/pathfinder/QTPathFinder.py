@@ -45,7 +45,7 @@ def findShortestPath(startPoint, endPoint, pack=[]):
 	ax.add_line(line)
 
 	#In Python an asterisk (*) unpacks a tuple or list, so like: function(*[1,2,3]) <=> function(1,2,3)
-	findPath(*pack, startPoint, endPoint, line, 'dijkstra')
+	findPath(*pack, startPoint, endPoint, line, 'a')
 
 	plt.draw()
 
@@ -118,9 +118,10 @@ def findPath(gdict, fig, ax, limits, startPoint, endPoint, line, type):
 		# sp contains sp[0] - the path length, sp[1] the nodes taken; we set line data to the nodes
 		line.set_xdata([p[0] for p in sp[1]])
 		line.set_ydata([p[1] for p in sp[1]])
-	except:
+	except Exception as e:
 		print("Not a valid path optimizer!")
 		print("We will still return though.")
+		print(str(e))
 	pass
 
 

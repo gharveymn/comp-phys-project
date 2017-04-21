@@ -82,7 +82,7 @@ pass
 def parseMap():
 
 	try:
-		file = open('QTData/map.txt', 'r')
+		file = open('QTData/map2.txt', 'r')
 	except IOError:
 		print("QTData/map2.txt does not exist! Have you created it yet?")
 		raise
