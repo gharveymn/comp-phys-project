@@ -43,10 +43,10 @@ def parseQT(limits, rectVects):
 				gdict[(x,y)] = {}
 			pass
 
-			addAdjacentEdge(x,y,l,0,limitRect,rectVects,gdict)
-			addAdjacentEdge(x,y,-l,0,limitRect,rectVects,gdict)
-			addAdjacentEdge(x,y,0,w,limitRect,rectVects,gdict)
-			addAdjacentEdge(x,y,0,-w,limitRect,rectVects,gdict)
+			# addAdjacentEdge(x,y,l,0,limitRect,rectVects,gdict)
+			# addAdjacentEdge(x,y,-l,0,limitRect,rectVects,gdict)
+			# addAdjacentEdge(x,y,0,w,limitRect,rectVects,gdict)
+			# addAdjacentEdge(x,y,0,-w,limitRect,rectVects,gdict)
 
 			for j in range(i,i+num_adjacent*4,4):
 				x1 = data[j]
@@ -79,7 +79,7 @@ pass
 def parseMap():
 
 	try:
-		file = open('QTData/map2.txt', 'r')
+		file = open('QTData/map.txt', 'r')
 	except IOError:
 		print("QTData/map2.txt does not exist! Have you created it yet?")
 		raise
