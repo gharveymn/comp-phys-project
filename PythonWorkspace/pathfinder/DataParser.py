@@ -37,7 +37,7 @@ def parseQT(limits, rectVects):
 		num_adjacent = int(data[i+4])
 		i += 5
 
-		if not Helper.isInsideRect((x,y),rectVects):
+		if not Helper.isInsideRect((x,y),rectVects) and num_adjacent != 0:
 
 			if (x,y) not in gdict:
 				gdict[(x,y)] = {}
@@ -51,11 +51,12 @@ def parseQT(limits, rectVects):
 			for j in range(i,i+num_adjacent*4,4):
 				x1 = data[j]
 				y1 = data[j+1]
-				l1 = data[j+2]
-				w1 = data[j+3]
+				# l1 = data[j+2]
+				# w1 = data[j+3]
 
-				if not Helper.isInsideRect((x1,y1),rectVects):
-					dist = l1*l1 + w1*w1
+				if not Helper.isInsideRect((x1,y1),rectVects) and not Helper.crossesBox((x,y),(x1,y1),rectVects):
+					# dist = l1*l1 + w1*w1
+					dist = Helper.distancesq((x,y),(x1,y1))
 					gdict[(x,y)][(x1,y1)] = dist
 					if (x1,y1) in gdict:
 						gdict[(x1,y1)][(x,y)] = dist
@@ -70,7 +71,9 @@ def parseQT(limits, rectVects):
 
 	pass
 
+	print(len(gdict))
 	clean(gdict,rectVects)
+	print(len(gdict))
 	return gdict
 
 pass

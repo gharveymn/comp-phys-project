@@ -153,8 +153,14 @@ def findAllPaths(pack=[], needsFigure=False):
 		Also tries to to live plotting, but only sometimes works.
 		
 		calls:
-			initData()		Initializes gdict, calls the data parser
+			initData()		initializes gdict, calls the data parser
 			plotBox()			plots the main box
+			findPath()		finds the shortest path with specified algorithm
+		args:
+			pack				pack includes gdict,fig,ax,limits, used to speed up repeated calls
+			needsFigure		if we closed the figure set this to true to get a new one
+		return:
+			pack
 			
 	'''
 	#TODO Find all paths!
