@@ -11,8 +11,8 @@ def get():
 		Use the following commands so you can reload each module
 
 		>>> from importlib import reload
-		>>> import loadscript
-		>>> qt,il,dp,ds,hm,po,pl = loadscript.get()
+		>>> import LoadScript
+		>>> qt,il,dp,ds,hm,po,pl = LoadScript.get()
 
 		Then run as usual. For example, if you make changes in DataParser, use the command
 
