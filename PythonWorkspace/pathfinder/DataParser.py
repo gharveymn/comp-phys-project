@@ -53,7 +53,7 @@ def parseQT(limits, rectVects):
 				# l1 = data[j+2]
 				# w1 = data[j+3]
 
-				if not Helper.isInsideRect((x1,y1),rectVects) and not Helper.crossesBox((x,y),(x1,y1),rectVects):
+				if not Helper.isInsideRect((x1,y1),rectVects): #and not Helper.crossesBox((x,y),(x1,y1),rectVects):
 					# dist = l1*l1 + w1*w1
 					dist = Helper.distancesq((x,y),(x1,y1))
 					gdict[(x,y)][(x1,y1)] = dist
