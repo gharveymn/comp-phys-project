@@ -6,7 +6,6 @@ import os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 def parseQT(limits, rectVects):
-
 	my_file = filePath('QTData/tree.txt')
 	if not my_file.is_file():
 		print("QTData/tree.txt not created yet. Running QTData/CreateQT.exe ...")

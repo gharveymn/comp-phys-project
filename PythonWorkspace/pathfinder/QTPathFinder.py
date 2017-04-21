@@ -113,14 +113,18 @@ def findPath(gdict, fig, ax, limits, startPoint, endPoint, line, type):
 		pass
 		t2 = time.time()
 
-		sp[1].insert(0,r1)
-		sp[1].append(r2)
+		pathlength = sp[0]
+		foundPath = sp[1]
+		foundPath.insert(0,startPoint)
+		foundPath.append(endPoint)
+
+		print(foundPath)
 
 		print("Time taken: {0} s".format(t2 - t1))
 
 		# sp contains sp[0] - the path length, sp[1] the nodes taken; we set line data to the nodes
-		line.set_xdata([p[0] for p in sp[1]])
-		line.set_ydata([p[1] for p in sp[1]])
+		line.set_xdata([p[0] for p in foundPath])
+		line.set_ydata([p[1] for p in foundPath])
 	except Exception as e:
 		print("Not a valid path optimizer!")
 		print("We will still return though.")
