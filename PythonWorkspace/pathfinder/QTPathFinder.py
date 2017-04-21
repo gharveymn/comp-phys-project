@@ -120,7 +120,7 @@ def findPath(gdict, fig, ax, limits, startPoint, endPoint, line, type):
 
 		print(foundPath)
 
-		print("Time taken: {0} s".format(t2 - t1))
+		print("Time taken: {0}s".format(t2 - t1))
 
 		# sp contains sp[0] - the path length, sp[1] the nodes taken; we set line data to the nodes
 		line.set_xdata([p[0] for p in foundPath])
