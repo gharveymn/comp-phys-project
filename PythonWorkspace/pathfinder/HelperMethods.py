@@ -54,3 +54,51 @@ def isInsideRect(p,rectVects,edgesAreLava=True):
 	pass
 	return False
 pass
+
+def crossesBox(p1,p2,rectVects):
+	return evalCrossesBox(p1,p2,rectVects) or evalCrossesBox(p2,p1,rectVects)
+pass
+
+def evalCrossesBox(p1,p2,rectVects):
+
+	p1x = p1[0]
+	p1y = p1[1]
+	p2x = p2[0]
+	p2y = p2[1]
+
+	for rect in rectVects:
+					
+		w = rect[0][0]
+		s = rect[0][1]
+		e = rect[2][0]
+		n = rect[2][1]
+		
+		#If the centerpoint falls inside one of the rectangles, add to list for removal
+		if (p1y >= n) and  (p1x >= w and p1x <= e):
+			if(p2y < n):
+				return True
+			pass
+		pass
+
+		if (p1y <= s) and  (p1x >= w and p1x <= e):
+			if(p2y > s):
+				return True
+			pass
+		pass
+
+		if (p1x >= e) and  (p1y >= s and p1y <= n):
+			if(p2x < e):
+				return True
+			pass
+		pass
+
+		if (p1x <= w) and  (p1y >= s and p1y <= n):
+			if(p2x > w):
+				return True
+			pass
+		pass
+				
+	pass
+
+	return False
+pass
