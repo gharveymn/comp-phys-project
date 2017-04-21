@@ -55,6 +55,8 @@ void freeTree(Node* node);
 void freePointers();
 bool shares_edge(Node* node1, Node* node2);
 bool shares_corner(Node* node1, Node* node2);
+bool filled_by_object(Map* map, Square area);
+
 
 //These constants are important in order to avoid memory overflow for high threshold value
 int qt_threshold = 9;
@@ -146,6 +148,7 @@ Node* initializeNode(Square area, Node* parent, int depth, int cardinality)
 	ret->parent = parent;
 	ret->depth = depth;
 	ret->num_adjacent = 0;
+	ret->contains_object = FALSE;
 
 	//initialize adjacency list
 	ret->adjacency_list = (Node **)malloc((max_num_adjacent)*sizeof(Node *));
@@ -225,12 +228,20 @@ void makeQT(Node* curr, Map* map, Node** children)
 			freePointers();
 			exit(EXIT_FAILURE);
 		}
-		children[num_children] = curr;
-		num_children++;
+		
+		if (contains_object(map, curr->square) || filled_by_object(map, curr->square))
+		{
+			curr->contains_object = TRUE;
+		}
+		else
+		{
+			children[num_children] = curr;
+			num_children++;
+		}
 	}
 	else if (contains_object(map, curr->square))
 	{
-		curr->contains_object = 1;
+		curr->contains_object = TRUE;
 
 		for (int i = 0; i < 4; i++)
 		{
@@ -262,8 +273,12 @@ void makeQT(Node* curr, Map* map, Node** children)
 			freePointers();
 			exit(EXIT_FAILURE);
 		}
-		children[num_children] = curr;
-		num_children++;
+		if (!filled_by_object(map, curr->square))
+		{
+			children[num_children] = curr;
+			num_children++;
+		}
+		
 	}
 }
 /*contains_object checks if a given area contains an object
@@ -279,6 +294,7 @@ char contains_object(Map* map, Square area)
 	bool rightBounded = FALSE;
 	bool topBounded = FALSE;
 	bool bottomBounded = FALSE;
+
 	float l = area.l;
 	float w = area.w;
 	//obj_max and obj_min are two points that describe the location of an object.
@@ -315,7 +331,7 @@ char contains_object(Map* map, Square area)
 			}
 		}
 		//Check if the right side is bounded by the area
-		else if (obj_max.x > area.corner.x && obj_max.x <= area.corner.x + l)
+		if (obj_max.x > area.corner.x && obj_max.x <= area.corner.x + l)
 		{
 			if(obj_max.y >= area.corner.y + w && obj_min.y < area.corner.y + w)
 			{
@@ -334,7 +350,7 @@ char contains_object(Map* map, Square area)
 			}
 		}
 		//Check if the top side is bounded by the area
-		else if (obj_max.y > area.corner.y && obj_max.y <= area.corner.y + w)
+		if (obj_max.y > area.corner.y && obj_max.y <= area.corner.y + w)
 		{
 			if (obj_min.x <= area.corner.x && obj_max.x > area.corner.x)
 			{
@@ -353,7 +369,7 @@ char contains_object(Map* map, Square area)
 			}
 		}
 		//Check if the bottom side is bounded by the area
-		else if (obj_min.y >= area.corner.y && obj_min.y < area.corner.y + w)
+		if (obj_min.y >= area.corner.y && obj_min.y < area.corner.y + w)
 		{
 			if (obj_min.x <= area.corner.x && obj_max.x > area.corner.x)
 			{
@@ -480,13 +496,18 @@ void outputTree(Node* node, FILE *fp, Square area)
 	else
 	{
 		//Print info for all the deepest children of the tree, the higher up children don't matter for visualization
-		fprintf(fp, "%f %f %f %f\n", area.corner.x, area.corner.y, area.l, area.w);
+		fprintf(fp, "%f %f %f %f\n", area.corner.x + area.l/2, area.corner.y + area.w/2, area.l/2, area.w/2);
 		//node info followed by number of adjacent nodes on next line
 		//Then node info (one node per line) for all adjacent nodes
 		fprintf(fp, "%d\n", node->num_adjacent);
+		float x, y, l, w;
 		for (int i = 0; i < node->num_adjacent; i++)
 		{
-			fprintf(fp, "%f %f %f %f\n", node->adjacency_list[i]->square.corner.x, node->adjacency_list[i]->square.corner.y, node->adjacency_list[i]->square.l, node->adjacency_list[i]->square.w);
+			x = node->adjacency_list[i]->square.corner.x;
+			y = node->adjacency_list[i]->square.corner.y;
+			l = node->adjacency_list[i]->square.l;
+			w = node->adjacency_list[i]->square.w;
+			fprintf(fp, "%f %f %f %f\n", x + l/2, y + w/2, l/2, w/2);
 		}
 	}
 }
@@ -604,4 +625,34 @@ void freePointers()
 	free(map);
 	freeTree(root);
 	free(children);
+}
+bool filled_by_object(Map* map, Square area)
+{
+	bool filled = FALSE;
+	float l = area.l;
+	float w = area.w;
+	//obj_max and obj_min are two points that describe the location of an object.
+	//obj_max.x and obj_max.y are the x and y values of the top right corner of the object
+	//obj_min.x and obj_min.y are the x and y values of the bottom left corner of the object
+	Point obj_min;
+	Point obj_max;
+	Square curr;
+	for (int i = 0; i < map->numSquares; i++)
+	{
+		curr = map->squares[i];
+		obj_max.x = curr.corner.x + curr.l;
+		obj_max.y = curr.corner.y + curr.w;
+		obj_min.x = curr.corner.x;
+		obj_min.y = curr.corner.y;
+
+		if (obj_min.x <= area.corner.x && obj_max.x >= area.corner.x + l)
+		{
+			if (obj_min.y <= area.corner.y && obj_max.y >= area.corner.y + w)
+			{
+				filled = TRUE;
+				break;
+			}
+		}
+	}
+	return filled;
 }

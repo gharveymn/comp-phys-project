@@ -32,13 +32,13 @@ while i < size(data,1) - 4
     
     num_adjacent = data(i+4);
     i = i + 5;
-%     for j=i:4:i+(num_adjacent-1)*4
-%         x1 = data(j);
-%         y1 = data(j+1);
-%         l1 = data(j+2);
-%         w1 = data(j+3);
-%         rectangle('Position', [x1 y1 l1 w1], 'FaceColor', colours(mod(i,4) + 1), 'EdgeColor', 'k');
-%     end;
+    for j=i:4:i+(num_adjacent-1)*4
+        x1 = data(j);
+        y1 = data(j+1);
+        l1 = data(j+2);
+        w1 = data(j+3);
+        %rectangle('Position', [x1 y1 l1 w1], 'FaceColor', colours(mod(i,4) + 1), 'EdgeColor', 'k');
+    end;
     i = i + num_adjacent*4;
     rectangle('Position', [x y l w], 'FaceColor', 'none');
 end;
