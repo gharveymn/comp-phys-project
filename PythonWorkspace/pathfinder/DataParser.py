@@ -128,6 +128,7 @@ def addAdjacentEdge(x,y,delx,dely,limitRect,rectVects,gdict):
 pass
 
 def clean(gdict,rectVects):
+	# TODO: Get rid of useless cleaning if possible
 
 	# removalSet = []
 

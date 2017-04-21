@@ -171,7 +171,15 @@ def findAllPaths(pack=[], needsFigure=False):
 			pack
 			
 	'''
-	#TODO Find all paths!
+	#TODO Partition start points and end points here
+
+
+	#TODO Instaniate thread of ThreadedPartition for each partition
+
+	#TODO Collect results into global variable storing {(startPoint):{(endPoint:[path])}} for each start
+	# and end. Your decision to insert each path here, or dynamically inside ThreadedPartition
+
+
 
 	if not pack:
 		pack = initData()

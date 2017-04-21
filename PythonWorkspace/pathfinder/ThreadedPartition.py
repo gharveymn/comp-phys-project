@@ -1,4 +1,4 @@
-
+# TODO:
 # input:
 # 	gdict
 # 	startpoints
@@ -10,3 +10,6 @@
 # return:
 #	dictionary of paths in form 
 # {(startpoint1):{(endpoint1):[(pathpoint1),(pathpoint2),...], (endpoint2):{...}}, (startpoint2):{...}}
+
+def findPaths(gdict, startPoints, endsPoints):
+	

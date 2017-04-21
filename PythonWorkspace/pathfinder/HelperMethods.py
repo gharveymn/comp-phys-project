@@ -102,6 +102,3 @@ def evalCrossesBox(p1,p2,rectVects):
 
 	return False
 pass
-
-# DensityFunction
-# 
