@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9) (preloaded format=pdflatex 2016.9.8)  21 APR 2017 16:51
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9) (preloaded format=pdflatex 2016.9.8)  22 APR 2017 01:16
 entering extended mode
 **companion.tex
 (companion.tex
@@ -2813,7 +2813,7 @@ Package pdftex.def Info: figure_5.png used on input line 35.
 Here is how much of TeX's memory you used:
  42274 strings out of 493673
  932797 string characters out of 3141534
- 1103034 words of memory out of 3000000
+ 1103033 words of memory out of 3000000
  44806 multiletter control sequences out of 15000+200000
  22573 words of font info for 97 fonts, out of 3000000 for 9000
  1025 hyphenation exceptions out of 8191

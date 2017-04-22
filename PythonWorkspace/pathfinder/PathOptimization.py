@@ -64,7 +64,7 @@ def dijkstra(graph, current, end, visited=[], distances={}, predecessors={}):
 	
 	# detect if it's the first time through, set current distance to zero
 	if not visited: distances[current] = 0
-	# process neighbors as per algorithm, keep track of predecessors
+	# process adjacent nodes as per algorithm, keep track of predecessors
 	for adjacent in graph[current]:
 		if adjacent not in visited:
 			adjDist = distances.get(adjacent, sys.maxsize)
@@ -76,7 +76,7 @@ def dijkstra(graph, current, end, visited=[], distances={}, predecessors={}):
 		pass
 	pass
 	
-	# neighbors processed, now mark the current node as visited
+	# all adjacent nodes have been processed, now mark the current node as visited
 	visited.append(current)
 	# finds the closest unvisited node to the start
 	notVisited = dict((k, distances.get(k, sys.maxsize)) for k in graph if k not in visited)
@@ -96,7 +96,7 @@ def dynamicDijkstra(graph, current, end, dynamicPaths, visited=[], distances={},
 	if current == end:
 		pathShortest = []
 		while end != None:
-			pathShortest.append(end)
+			pathShortest.append(end) #{(f):None,(d):(e),(c):(d),(b):(c),(a):(b)}
 			end = predecessors.get(end, None)
 		pass
 		return distances[current], pathShortest[::-1]

@@ -14,6 +14,11 @@ def get():
 		>>> import loadscript
 		>>> qt,il,dp,ds,hm,po,pl = loadscript.get()
 
+(for copy paste)
+from importlib import reload
+import loadscript
+qt,il,dp,ds,hm,po,pl = loadscript.get()
+
 		Then run as usual. For example, if you make changes in DataParser, use the command
 
 		>>> reload(dp)
