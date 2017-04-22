@@ -11,6 +11,7 @@ import matplotlib.lines as lines
 import numpy as np
 import threading as th
 import ThreadedPartition
+import sys
 
 import time
 
@@ -158,7 +159,7 @@ def findPathBoth(gdict, fig, ax, limits, startPoint, endPoint, line):
 pass
 
 
-def findAllPaths(pack=[], needsFigure=False):
+def findAllPaths(pack=[]):
 	'''
 		Finds all paths between nodes from the quadtree
 
@@ -175,65 +176,49 @@ def findAllPaths(pack=[], needsFigure=False):
 			pack
 			
 	'''
-	#TODO Partition start points and end points here
-
-	#TODO Instaniate thread of ThreadedPartition for each partition
-
-	#TODO Collect results into global variable storing {(startPoint):{(endPoint:[path])}} for each start
-	# and end. Your decision to insert each path here, or dynamically inside ThreadedPartition
-
-
-
+	sys.setrecursionlimit(1500)
 	if not pack:
 		pack = initData()
 	pass
 
 	gdict = pack[0]
-	numNodes = len(gdict)
-	adjMat= np.ones((numNodes, numNodes))
-	adjMat = adjMat*(-1)
+	adjMat= {}
 
 	threads = []
 
-	adjMatLock = th.lock()
-
-	if needsFigure:
-		limits, rectVects = DataParser.parseMap()
-		fig, ax = Plotting.plotBox(pack[0], limits, rectVects)
-		pack = [pack[0], fig, ax, limits]
-	pass
+	adjMatLock = th.Lock()
 
 	fig = pack[1]
 	ax = pack[2]
 	limits = pack[3]
 
-	line = lines.Line2D([], [], lw=2, c='red')
-	ax.add_line(line)
+	# path dictionary
+	pdict = {}
 
-	for i in range(0, numNodes-1):
-		startPoints = gdict[i]
-		endPoints = gdict[:]
-		endPoints.remove(startPoints)
-		t = th.Thread(target = ThreadedPartition.findPaths, args = (pack, adjMatLock, adjMat, startPoints, endPoints))
-		t.start()
-		threads.append(t)
+	for i in gdict:
+		startPoints = []
+		endPoints = []
+		startPoints.append(i)
+		for key in gdict:
+			if key not in startPoints:
+				endPoints.append(key)
+			pass
+		pass
 
-		#Sometimes this works, sometimes it doesn't... idk.
-		#Calculations are good though.
-		#fig.canvas.draw()
-		#fig.canvas.flush_events()
+		ThreadedPartition.findPaths(pack, pdict, adjMatLock, adjMat, startPoints, endPoints)
+		# t = th.Thread(target = ThreadedPartition.findPaths, args = (pack, pdict, adjMatLock, adjMat, startPoints, endPoints))
+		# t.start()
+		# threads.append(t)
 	pass
 
-	for t in threads:
-		t.join()
-	pass
+	# for t in threads:
+	# 	t.join()
+	# pass
 
 	return pack
-
-
 pass
 
 if __name__ == "__main__":
-	#findAllPaths()
-	findShortestPath((10, 0), (8, 7.8))
+	findAllPaths()
+	#findShortestPath((10, 0), (8, 7.8))
 pass
