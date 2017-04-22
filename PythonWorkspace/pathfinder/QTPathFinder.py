@@ -8,8 +8,12 @@ import matplotlib.path as mpath
 import matplotlib.patches as patches
 import matplotlib.animation as animation
 import matplotlib.lines as lines
+import numpy as np
+import threading as th
+import ThreadedPartition
 
 import time
+
 
 
 def findShortestPath(startPoint, endPoint, pack=[]):
@@ -173,7 +177,6 @@ def findAllPaths(pack=[], needsFigure=False):
 	'''
 	#TODO Partition start points and end points here
 
-
 	#TODO Instaniate thread of ThreadedPartition for each partition
 
 	#TODO Collect results into global variable storing {(startPoint):{(endPoint:[path])}} for each start
@@ -185,8 +188,17 @@ def findAllPaths(pack=[], needsFigure=False):
 		pack = initData()
 	pass
 
+	gdict = pack[0]
+	numNodes = len(gdict)
+	adjMat= np.ones((numNodes, numNodes))
+	adjMat = adjMat*(-1)
+
+	threads = []
+
+	adjMatLock = th.lock()
+
 	if needsFigure:
-		limits, rectVects = parseMap()
+		limits, rectVects = DataParser.parseMap()
 		fig, ax = Plotting.plotBox(pack[0], limits, rectVects)
 		pack = [pack[0], fig, ax, limits]
 	pass
@@ -198,15 +210,22 @@ def findAllPaths(pack=[], needsFigure=False):
 	line = lines.Line2D([], [], lw=2, c='red')
 	ax.add_line(line)
 
-	numPaths = 15
-	for i in range(numPaths):
-		k = limits[1] * i / numPaths
-		findPath(*pack, (k, 0), (8, 7.8), line, 'dijkstra')
+	for i in range(0, numNodes-1):
+		startPoints = gdict[i]
+		endPoints = gdict[:]
+		endPoints.remove(startPoints)
+		t = th.Thread(target = ThreadedPartition.findPaths, args = (pack, adjMatLock, adjMat, startPoints, endPoints))
+		t.start()
+		threads.append(t)
 
 		#Sometimes this works, sometimes it doesn't... idk.
 		#Calculations are good though.
-		fig.canvas.draw()
-		fig.canvas.flush_events()
+		#fig.canvas.draw()
+		#fig.canvas.flush_events()
+	pass
+
+	for t in threads:
+		t.join()
 	pass
 
 	return pack

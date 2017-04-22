@@ -1,8 +1,9 @@
+import PathOptimization as po
 # TODO:
 # input:
-# 	gdict
+# 	pack
 # 	startpoints
-#	endpoints (probably just 1, depends on speed)
+#	endpoints
 #
 # get:
 #	path for each startpoint and endpoint
@@ -11,5 +12,19 @@
 #	dictionary of paths in form 
 # {(startpoint1):{(endpoint1):[(pathpoint1),(pathpoint2),...], (endpoint2):{...}}, (startpoint2):{...}}
 
-def findPaths(gdict, startPoints, endsPoints):
+def findPaths(pack, lock, dynamicPaths, startPoints, endsPoints):
+    gdict = pack[0]
+    pdict = {}
+
+    for i in range (0, len(startPoints) - 1):
+        pdict[startPoints[i]] = {}
+        for j in range (0, len(endsPoints) - 1):
+            sp = po.dynamicDijkstra(gdict, startPoints[i], endsPoints[j], dynamicPaths)
+            path = sp[1]
+            pdict[startPoints[i]] = {endsPoints[j]: path}
+        pass
+    pass
+
+    return pdict
+pass
 	
