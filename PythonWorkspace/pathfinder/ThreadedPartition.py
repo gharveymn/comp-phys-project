@@ -21,7 +21,7 @@ def findPaths(pack, pdict, lock, dynamicPaths, startPoints, endPoints):
         for endPoint in endPoints:
             sp = po.dynamicDijkstra(gdict, lock, startPoint, endPoint, dynamicPaths, visited=[], distances={}, predecessors={})
             path = sp[1]
-            pdict[startPoint] = {endPoint: path}
+            pdict[startPoint][endPoint] = path
         pass
     pass
 
