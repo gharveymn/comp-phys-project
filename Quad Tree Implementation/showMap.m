@@ -8,8 +8,8 @@ y_max = data(4);
 num_squares = data(5);
 figure
 axis([x_min x_max y_min y_max]);
-grid on;
-grid minor;
+%grid on;
+%grid minor;
 
 for i=6:4:size(data,1) - 3
     x = data(i);
