@@ -1,0 +1,12 @@
+
+PURPOSE
+To take the graph outputted by the C program and find the shortest path between any and all points.
+METHOD
+A variation of Dijkstra's algorithm called A* is used.  
+A* evaluates the cost of travelling between two nodes a bit differently than Dijkstra but they are otherwise identical.
+In Dijkstra's algorithm, the actual cost is used, we will refer to this as c(x,y) from now on (x and y being the two nodes we are evaluating the cost between).
+In the A* algorithm, a heuristic value is added to the actual cost to help speed up the search.  Let's call this h(x,y).  In our case we used the cartesian distance between the two points so that the algorithm would tend to travel in the direction of the end point before it had a chance to compare the optimal path with less optimal paths.  Essentially, this elimates less optimal paths as possibilities sooner, speeding up the search.
+CHALLENGES
+When finding the shortest path between all points, the program was still quite slow.  So we had to multithread it.  Now it runs in about 20 minutes as opposed to the 39 days we had projected for the non-threaded version.  
+IMPROVEMENTS
+The paths are currently found recursively, which is usually not as fast as an iterative algorithm.  If time would have permitted it might have been worth our time to rewrite the algorithm iteratively so see how much of a speedup we could get.  
