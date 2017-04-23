@@ -1,8 +1,0 @@
-Kompilieren in a.out:
-gcc -lm revers.c
-
-Kompilieren in run:
-gcc -lm -o run revers.c
-
-Rechnen:
-./a.out bzw. ./run
