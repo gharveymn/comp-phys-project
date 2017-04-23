@@ -30,6 +30,11 @@ while i < size(data,1) - 4
     l = data(i + 2);
     w = data(i + 3);
     
+    x = x - l;
+    y = y - w;
+    l = 2*l;
+    w = 2*w;
+    
     num_adjacent = data(i+4);
     i = i + 5;
     for j=i:4:i+(num_adjacent-1)*4

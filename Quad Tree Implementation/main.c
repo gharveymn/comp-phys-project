@@ -62,7 +62,7 @@ bool filled_by_object(Map* map, Square area);
 int qt_threshold = 9;
 float actual_to_max_children_ratio = 0.75;
 int max_num_adjacent = 30;
-char* map_file = "map.txt";
+char* map_file = "map2.txt";
 
 int num_children;
 int max_children;
@@ -116,7 +116,7 @@ int main(int argc, char** args)
 	num_children = 0;
 	children = (Node **)malloc((int)(actual_to_max_children_ratio*max_children)*sizeof(Node*));
 	
-	map = makeMap("map2.txt");
+	map = makeMap(map_file);
 	printMap(map);
 	
 	Square root_area;

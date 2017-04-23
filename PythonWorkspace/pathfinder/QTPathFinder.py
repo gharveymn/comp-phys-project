@@ -176,12 +176,12 @@ def findAllPaths(pack=[]):
 			
 	'''
 	sys.setrecursionlimit(1500)
+	t1 = time.time()
 	if not pack:
 		pack = initData()
 	pass
 
 	gdict = pack[0]
-	global dynamicPaths
 	dynamicPaths= {}
 
 	threads = []
@@ -205,16 +205,17 @@ def findAllPaths(pack=[]):
 			pass
 		pass
 
-		ThreadedPartition.findPaths(pack, pdict, adjMatLock, dynamicPaths, startPoints, endPoints)
-		# t = th.Thread(target = ThreadedPartition.findPaths, args = (pack, pdict, adjMatLock, adjMat, startPoints, endPoints))
-		# t.start()
-		# threads.append(t)
+		#ThreadedPartition.findPaths(pack, pdict, adjMatLock, dynamicPaths, startPoints, endPoints)
+		t = th.Thread(target = ThreadedPartition.findPaths, args = (pack, pdict, adjMatLock, dynamicPaths, startPoints, endPoints))
+		t.start()
+		threads.append(t)
 	pass
 
-	# for t in threads:
-	# 	t.join()
-	# pass
-
+	for t in threads:
+		t.join()
+	pass
+	t2 = time.time()
+	print("Time taken: {0}s".format(t2 - t1))
 	return pack
 pass
 
