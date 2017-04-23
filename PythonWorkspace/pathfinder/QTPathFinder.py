@@ -16,7 +16,6 @@ import sys
 import time
 
 
-
 def findShortestPath(startPoint, endPoint, pack=[]):
 	'''findShortestPath
 		This is the entry point for a single calculation
@@ -182,7 +181,8 @@ def findAllPaths(pack=[]):
 	pass
 
 	gdict = pack[0]
-	adjMat= {}
+	global dynamicPaths
+	dynamicPaths= {}
 
 	threads = []
 
@@ -205,7 +205,7 @@ def findAllPaths(pack=[]):
 			pass
 		pass
 
-		ThreadedPartition.findPaths(pack, pdict, adjMatLock, adjMat, startPoints, endPoints)
+		ThreadedPartition.findPaths(pack, pdict, adjMatLock, dynamicPaths, startPoints, endPoints)
 		# t = th.Thread(target = ThreadedPartition.findPaths, args = (pack, pdict, adjMatLock, adjMat, startPoints, endPoints))
 		# t.start()
 		# threads.append(t)
@@ -217,6 +217,7 @@ def findAllPaths(pack=[]):
 
 	return pack
 pass
+
 
 if __name__ == "__main__":
 	findAllPaths()

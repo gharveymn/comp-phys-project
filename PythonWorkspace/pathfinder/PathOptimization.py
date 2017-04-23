@@ -88,23 +88,46 @@ def dijkstra(graph, current, end, visited=[], distances={}, predecessors={}):
 pass
 
 def dynamicDijkstra(graph, lock, current, end, dynamicPaths, visited=[], distances={}, predecessors={}):
+	
 	if current in dynamicPaths:
 		if end in dynamicPaths[current]:
+			linkagePath = dynamicPaths[current][end]
 			pathShortest = []
-			while end != None:
-				pathShortest.append(end)
-				end = predecessors.get(end, None)
+			for i in range(1, len(linkagePath)):
+				currentLink = linkagePath[i-1]
+				nextLink = linkagePath[i]
+				predecessors[nextLink] = currentLink
+				if not distances:
+					distances[nextLink] = graph[currentLink][nextLink]
+				else:
+					distances[nextLink] = distances[currentLink] + graph[currentLink][nextLink]
+				pass
 			pass
-			return distances[current], pathShortest[::-1]  # add to distance and shortest path!!!!!
+			current = end
 		pass
 	elif end in dynamicPaths:
 		if current in dynamicPaths[end]:
+			linkagePath = dynamicPaths[end][current][::-1] #Easier just to reverse it and do the same as above
 			pathShortest = []
-			while end != None:
-				pathShortest.append(end)
-				end = predecessors.get(end, None)
+			for i in range(1, len(linkagePath)):
+				currentLink = linkagePath[i-1]
+				nextLink = linkagePath[i]
+				predecessors[nextLink] = currentLink
+				if not distances:
+					distances[nextLink] = graph[currentLink][nextLink]
+				else:
+					distances[nextLink] = distances[currentLink] + graph[currentLink][nextLink]
+				pass
+				# try:
+				# 	distances[nextLink] = distances[currentLink] + graph[currentLink][nextLink]
+				# except Exception as e:
+				# 	distances[nextLink] = graph[currentLink][nextLink]
+				# 	print(distances)
+				# 	print(nextLink)
+				# 	print(currentLink)
+				# pass
 			pass
-			return distances[current], pathShortest[::-1]  # add to distance and shortest path!!!!! and reverse it!!!
+			current = end
 		pass
 	pass
 
@@ -118,7 +141,7 @@ def dynamicDijkstra(graph, lock, current, end, dynamicPaths, visited=[], distanc
 		pass
 
 		# update dynamicPaths
-		for i in range(0, len(pathShortest)):
+		for i in range(len(pathShortest)):
 			s = pathShortest[i]
 			pathPiece = []
 			pathPiece.append(s)
@@ -139,6 +162,7 @@ def dynamicDijkstra(graph, lock, current, end, dynamicPaths, visited=[], distanc
 		pass
 
 		return distances[current], pathShortest[::-1]
+
 	pass
 
 	# detect if it's the first time through, set current distance to zero
@@ -159,7 +183,29 @@ def dynamicDijkstra(graph, lock, current, end, dynamicPaths, visited=[], distanc
 	visited.append(current)
 	# finds the closest unvisited node to the start
 	notVisited = dict((k, distances.get(k, sys.maxsize)) for k in graph if k not in visited)
-	closest = min(notVisited, key=notVisited.get)
+	try:
+		closest = min(notVisited, key=notVisited.get)
+	except:
+		plt.figure(1)
+		plt.scatter(*list(zip(*visited)),c='y', zorder=2000)
+		plt.scatter(*current,c='b',zorder=2000)
+		if end in predecessors:
+			plt.scatter(*end,c='k',zorder=2001)
+		else:
+			plt.scatter(*end,c='r',zorder=2000)
+		pass
+		curr = current
+		prev = None
+		while curr != None:
+			prev = curr
+			curr = predecessors.get(curr, None)
+		pass
+		start = prev
+		plt.scatter(*start,c='g',zorder=2000)
+		plt.show()
+		raise Exception(graph[current])
+	pass
+
 	# now we can take the closest node and recurse, making it current
 	return dynamicDijkstra(graph, lock, closest, end, dynamicPaths, visited, distances, predecessors)
 pass

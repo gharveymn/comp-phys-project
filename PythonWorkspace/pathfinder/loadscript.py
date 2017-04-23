@@ -5,6 +5,7 @@ import DescendingSelection as ds
 import HelperMethods as hm
 import PathOptimization as po
 import Plotting as pl
+import ThreadedPartition as tp
 
 def get():
 	'''USAGE:
@@ -17,7 +18,7 @@ def get():
 (for copy paste)
 from importlib import reload
 import loadscript
-qt,il,dp,ds,hm,po,pl = loadscript.get()
+qt,il,dp,ds,hm,po,pl,tp = loadscript.get()
 
 		Then run as usual. For example, if you make changes in DataParser, use the command
 
@@ -26,5 +27,5 @@ qt,il,dp,ds,hm,po,pl = loadscript.get()
 		and then run as usual.
 	'''
 
-	return qt,il,dp,ds,hm,po,pl
+	return qt,il,dp,ds,hm,po,pl,tp
 pass

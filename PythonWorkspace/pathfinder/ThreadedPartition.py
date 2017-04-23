@@ -1,4 +1,5 @@
 import PathOptimization as po
+import threading
 
 # TODO:
 # input:
@@ -15,14 +16,18 @@ import PathOptimization as po
 
 def findPaths(pack, pdict, lock, dynamicPaths, startPoints, endPoints):
     gdict = pack[0]
-
-    for i in range (0, len(startPoints)):
-        pdict[startPoints[i]] = {}
-        for j in range (0, len(endPoints)):
-            sp = po.dynamicDijkstra(gdict, lock, startPoints[i], endPoints[j], dynamicPaths)
+    for startPoint in startPoints:
+        pdict[startPoint] = {}
+        for endPoint in endPoints:
+            sp = po.dynamicDijkstra(gdict, lock, startPoint, endPoint, dynamicPaths, visited=[], distances={}, predecessors={})
             path = sp[1]
-            pdict[startPoints[i]] = {endPoints[j]: path}
+            pdict[startPoint][endPoint] = path
         pass
     pass
 pass
+
+# def statusUpdate():
+#     print(len(dynamicPaths))
+#     threading.Timer(2,statusUpdate).start()
+# pass
 	
