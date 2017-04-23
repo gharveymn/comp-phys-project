@@ -24,6 +24,7 @@ def findPaths(pack, pdict, lock, dynamicPaths, startPoints, endPoints):
             pdict[startPoint] = {endPoint: path}
         pass
     pass
+
 pass
 
 # def statusUpdate():
