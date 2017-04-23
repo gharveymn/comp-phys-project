@@ -217,7 +217,20 @@ def findAllPaths(pack=[]):
 	pass
 	t2 = time.time()
 	print("Time taken: {0}s".format(t2 - t1))
-	return pack
+	return pack,pdict
+pass
+
+
+def plotPathWithResults(pack,pdict,startPoint,endPoint):
+
+	r1 = Helper.findClosestNode(list(zip(*zip(*pdict.keys()))), startPoint)
+	r2 = Helper.findClosestNode(list(zip(*zip(*pdict.keys()))), endPoint)
+
+	foundPath = pdict[r1][r2]
+
+	Plotting.plotPath(pack[2],foundPath,ec='r')
+
+
 pass
 
 
