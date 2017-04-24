@@ -1,5 +1,4 @@
 import PathOptimization as po
-import threading
 
 # TODO:
 # input:
@@ -24,7 +23,6 @@ def findPaths(pack, pdict, lock, dynamicPaths, startPoints, endPoints):
             pdict[startPoint][endPoint] = path
         pass
     pass
-
 pass
 
 # def statusUpdate():

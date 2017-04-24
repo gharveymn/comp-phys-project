@@ -22,10 +22,10 @@ def main():
 	
 pass
 
-def makeGrid(numx,numy):
+def makeGrid(numx,numy,plotGrid=True):
 
 	#GRID CREATION
-	x,y,z,avgDensity = cgrid.densityGrid(numx,numy)
+	x,y,z,avgDensity = cgrid.densityGrid(numx,numy,plotGrid)
 	
 	#DICTIONARY CREATION
 	gdict, allPoints, indsPtsMap, ptsIndsMap = cgrid.createGraphDict(x,y,z)
@@ -35,6 +35,51 @@ def makeGrid(numx,numy):
 
 pass
 
+def demo():
+
+	numx = 30
+	numy = 30
+	startPoint = (0.5,0.0)
+	endPoint = (0.5,1.0)
+
+	x,y,z,avgDensity,gdict,allPoints,indsPtsMap,ptsIndsMap = makeGrid(numx,numy,False)
+
+	r1 = min(gdict.keys(), key=lambda x: distancesq(x, startPoint))
+	r2 = min(gdict.keys(), key=lambda x: distancesq(x, endPoint))
+	
+
+	sp = PathOpt.AStar(gdict,r1,r2,hScalar=1.0)
+	fig3 = plt.figure(1)
+	ax2 = pl.plot3dHeatMap(fig3, x, y, z)
+	xp = [i[0] for i in sp[1]]
+	yp = [j[1] for j in sp[1]]
+	zp = [z[ptsIndsMap[p][0]][ptsIndsMap[p][1]] for p in sp[1]]
+	ax2.plot(xp,yp,zp,'k',lw=2)
+	pl.setGeo(1)
+
+
+	sp = PathOpt.AStar(gdict,r1,r2,avgDensity)
+	fig3 = plt.figure(2)
+	ax2 = pl.plot3dHeatMap(fig3, x, y, z)
+	xp = [i[0] for i in sp[1]]
+	yp = [j[1] for j in sp[1]]
+	zp = [z[ptsIndsMap[p][0]][ptsIndsMap[p][1]] for p in sp[1]]
+	ax2.plot(xp,yp,zp,'k',lw=2)
+	pl.setGeo(2)
+	
+	
+	sp = PathOpt.dijkstra(gdict,r1,r2)
+	fig3 = plt.figure(3)
+	ax2 = pl.plot3dHeatMap(fig3, x, y, z)
+	xp = [i[0] for i in sp[1]]
+	yp = [j[1] for j in sp[1]]
+	zp = [z[ptsIndsMap[p][0]][ptsIndsMap[p][1]] for p in sp[1]]
+	ax2.plot(xp,yp,zp,'k',lw=2)
+	pl.setGeo(3)
+
+	plt.show()
+	
+pass
 
 def calculatePaths(x,y,z,avgDensity,gdict,allPoints,indsPtsMap,ptsIndsMap,startPoint,endPoint):
 
@@ -42,7 +87,8 @@ def calculatePaths(x,y,z,avgDensity,gdict,allPoints,indsPtsMap,ptsIndsMap,startP
 	r2 = min(gdict.keys(), key=lambda x: distancesq(x, endPoint))
 	
 	start = time.time()
-	sp = PathOpt.AStar(gdict,r1,r2)
+	print(avgDensity)
+	sp = PathOpt.AStar(gdict,r1,r2,hScalar=1.0)
 	end = time.time()
 	print("Best path found (A*) in {0} seconds.".format(end-start))
 	
@@ -143,7 +189,7 @@ def speedTest(startPoint,endPoint,avgDensity,numx,numy):
 
 		if(random.randint(0,1)):
 			start = time.time()
-			sp = PathOpt.AStar(gdict,r1,r2,avgDensity)
+			sp = PathOpt.AStar(gdict,r1,r2,hScalar=0.01)
 			end = time.time()
 			astartimes += [end-start]
 		else:
@@ -164,4 +210,4 @@ def speedTest(startPoint,endPoint,avgDensity,numx,numy):
 pass
 
 if __name__ == '__main__':
-	main()
+	demo()
