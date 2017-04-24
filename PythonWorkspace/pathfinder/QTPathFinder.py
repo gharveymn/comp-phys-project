@@ -230,7 +230,6 @@ def plotPathWithResults(pack,pdict,startPoint,endPoint):
 
 	Plotting.plotPath(pack[2],foundPath,ec='r')
 
-
 pass
 
 

@@ -3,7 +3,7 @@ from igraph import *
 
 def main(gdict):
 	g, edges, numKeyMap = makeGraph(gdict)
-	sp = shortestpath(gdict, 'a', 'b')
+	sp = shortestpath(gdict, 'a', 'l')
 	plotGraph(g,sp,edges,numKeyMap)
 pass
 
@@ -52,7 +52,7 @@ def plotGraph(g, sp, edges, numKeyMap):
 	visual_style = {"vertex_label": g.vs["name"], "edge_color": spedgecolors, "edge_curved": False}
 	
 	plot(g, **visual_style)
-	
+	pass
 pass
 
 def shortestpath(graph, current, end, visited=[], distances={}, predecessors={}):
@@ -98,7 +98,7 @@ def rmList(lst, rmel):
 if __name__ == "__main__":
 	#gdict should be a second order nested dictionary of size n = number of nodes, second order vals are distances
 	
-	numNodes = 26
+	numNodes = 12
 	nodes = list(map(chr, range(97, 97+numNodes)))
 	gdict = dict(zip(nodes, [None]*numNodes))
 	
