@@ -6,6 +6,7 @@ import HelperMethods as hm
 import PathOptimization as po
 import Plotting as pl
 import ThreadedPartition as tp
+from importlib import reload
 
 def get():
 	'''USAGE:
@@ -25,7 +26,14 @@ qt,il,dp,ds,hm,po,pl,tp = loadscript.get()
 		>>> reload(dp)
 
 		and then run as usual.
+
+
+		OR:
+			Just run the command 
+
+			>>> from loadscript import *
 	'''
 
 	return qt,il,dp,ds,hm,po,pl,tp
+	
 pass

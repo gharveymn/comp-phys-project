@@ -60,7 +60,7 @@ bool shares_corner(Node* node1, Node* node2);
 int qt_threshold = 9;
 float actual_to_max_children_ratio = 0.75;
 int max_num_adjacent = 30;
-char* map_file = "map.txt";
+char* map_file = "map3.txt";
 
 int num_children;
 int max_children;

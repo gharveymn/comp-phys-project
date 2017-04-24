@@ -15,6 +15,9 @@ import sys
 
 import time
 
+from pympler.tracker import SummaryTracker
+tracker = SummaryTracker()
+
 
 def findShortestPath(startPoint, endPoint, pack=[]):
 	'''findShortestPath
@@ -211,6 +214,8 @@ def findAllPaths(pack=[]):
 		t.start()
 		threads.append(t)
 	pass
+
+	tracker.threads
 
 	for t in threads:
 		t.join()
