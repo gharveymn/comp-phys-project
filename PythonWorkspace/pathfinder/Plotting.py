@@ -115,8 +115,6 @@ def plotBox(gdict,limits,rectVects):
 		pass
 	pass
 
-	plt.show()
-
 	return fig, ax
 
 pass

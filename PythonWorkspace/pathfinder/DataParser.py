@@ -70,9 +70,9 @@ def parseQT(limits, rectVects):
 
 	pass
 
-	print(len(gdict))
+	print("Number of nodes: {0}".format(len(gdict)))
 	clean(gdict,rectVects)
-	print(len(gdict))
+	print("Number of nodes in cleaned graph: {0}".format(len(gdict)))
 	return gdict
 
 pass
@@ -81,9 +81,9 @@ pass
 def parseMap():
 
 	try:
-		file = open('QTData/map3.txt', 'r')
+		file = open('QTData/map2.txt', 'r')
 	except IOError:
-		print("QTData/map3.txt does not exist! Have you created it yet?")
+		print("QTData/map2.txt does not exist! Have you created it yet?")
 		raise
 	pass
 

@@ -14,6 +14,7 @@ import ThreadedPartition
 import sys
 
 import time
+import random
 
 
 def findShortestPath(startPoint, endPoint, pack=[]):
@@ -52,7 +53,7 @@ def findShortestPath(startPoint, endPoint, pack=[]):
 	#In Python an asterisk (*) unpacks a tuple or list, so like: function(*[1,2,3]) <=> function(1,2,3)
 	findPath(*pack, startPoint, endPoint, line, 'a')
 
-	plt.draw()
+	plt.show()
 
 	return pack
 
@@ -119,6 +120,10 @@ def findPath(gdict, fig, ax, limits, startPoint, endPoint, line, type):
 			sp = PathOptimization.dijkstra(gdict, r1, r2)
 		pass
 		t2 = time.time()
+
+		print(sp[1])
+		print(r1)
+		print(r2)
 
 		pathlength = sp[0]
 		foundPath = sp[1]
@@ -200,7 +205,8 @@ def findAllPaths(pack=[]):
 	pdict = {}
 
 	allPoints = list(gdict.keys())
-	stride = 10
+	numThreads = 4 #+-1
+	stride = int(len(allPoints)/numThreads)
 
 	for i in range(0, len(allPoints), stride):
 		startPoints = allPoints[i:i+stride]
@@ -211,18 +217,24 @@ def findAllPaths(pack=[]):
 			pass
 		pass
 
+		random.shuffle(endPoints)
+
 		#ThreadedPartition.findPaths(pack, pdict, adjMatLock, dynamicPaths, startPoints, endPoints)
 		t = th.Thread(target = ThreadedPartition.findPaths, args = (pack, pdict, adjMatLock, dynamicPaths, startPoints, endPoints))
 		t.start()
 		threads.append(t)
 	pass
 
+	totalPaths = len(allPoints)**2 - len(allPoints)
+	reportStatus(pdict,totalPaths,threads[len(threads)-1])
+
 	for t in threads:
 		t.join()
 	pass
 	t2 = time.time()
 	print("Time taken: {0}s".format(t2 - t1))
-	return pack
+	plt.show()
+	return pack, pdict
 pass
 
 
@@ -232,13 +244,29 @@ def plotPathWithResults(pack,pdict,startPoint,endPoint):
 	r2 = Helper.findClosestNode(list(zip(*zip(*pdict.keys()))), endPoint)
 
 	foundPath = pdict[r1][r2]
+	foundPath.insert(0,startPoint)
+	foundPath.append(endPoint)
 
 	Plotting.plotPath(pack[2],foundPath,ec='r')
 
 pass
 
 
+def reportStatus(pdict,total,sentinel):
+	if(sentinel.isAlive()):
+		numFound = 0
+		for v in pdict.values():
+			numFound += len(v)
+		pass
+
+		print("pdict has acquired pathing for {0} of {1} total paths".format(numFound,total))
+		t = th.Timer(5,reportStatus,[pdict,total,sentinel])
+		t.start()
+	pass
+pass
+
+
 if __name__ == "__main__":
 	findAllPaths()
-	#findShortestPath((10, 0), (8, 7.8))
+	#findShortestPath((10, 0), (7, 7))
 pass

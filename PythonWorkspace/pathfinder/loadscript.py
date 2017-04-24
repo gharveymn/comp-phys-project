@@ -7,6 +7,7 @@ import PathOptimization as po
 import Plotting as pl
 import ThreadedPartition as tp
 from importlib import reload
+import matplotlib.pyplot as plt
 
 def get():
 	'''USAGE:

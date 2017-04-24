@@ -21,7 +21,12 @@ def AStarEval(graph, current, end, h, visited=[], distances={}, predecessors={})
 			pathShortest.append(end)
 			end = predecessors.get(end, None)
 		pass
-		return distances[current], pathShortest[::-1]
+		try:
+			return distances[current], pathShortest[::-1]
+		except:
+			print('The path optimizer failed. Make sure your graph is connected.')
+			raise
+		pass
 	pass
 	
 	# detect if it's the first time through, set current distance to zero
@@ -87,51 +92,66 @@ def dijkstra(graph, current, end, visited=[], distances={}, predecessors={}):
 	return dijkstra(graph, closest, end, visited, distances, predecessors)
 pass
 
-def dynamicDijkstra(graph, lock, current, end, dynamicPaths, visited=[], distances={}, predecessors={}):
+def dynamicDijkstra(graph, lock, current, end, dynamicPaths, startStatic, visited=[], distances={}, predecessors={}):
 	
+	# detect if it's the first time through, set current distance to zero
+	if not visited: distances[current] = 0
+
 	if current in dynamicPaths:
 		if end in dynamicPaths[current]:
 			linkagePath = dynamicPaths[current][end]
-			pathShortest = []
-			for i in range(1, len(linkagePath)):
-				currentLink = linkagePath[i-1]
-				nextLink = linkagePath[i]
-				predecessors[nextLink] = currentLink
-				if not distances:
-					distances[nextLink] = graph[currentLink][nextLink]
-				else:
-					distances[nextLink] = distances[currentLink] + graph[currentLink][nextLink]
+			if pathDoesntCross(current,predecessors,linkagePath):
+				pathShortest = []
+				for i in range(1, len(linkagePath)):
+					currentLink = linkagePath[i-1]
+					nextLink = linkagePath[i]
+					predecessors[nextLink] = currentLink
+					if not distances:
+						distances[nextLink] = graph[currentLink][nextLink]
+					else:
+						distances[nextLink] = distances[currentLink] + graph[currentLink][nextLink]
+					pass
+					# try:
+					# 	distances[nextLink] = distances[currentLink] + graph[currentLink][nextLink]
+					# except Exception as e:
+					# 	distances[nextLink] = graph[currentLink][nextLink]
+					# 	print(distances)
+					# 	print(nextLink)
+					# 	print(currentLink)
+					# pass
 				pass
+				current = end
 			pass
-			current = end
 		pass
 	elif end in dynamicPaths:
 		if current in dynamicPaths[end]:
 			linkagePath = dynamicPaths[end][current][::-1] #Easier just to reverse it and do the same as above
-			pathShortest = []
-			for i in range(1, len(linkagePath)):
-				currentLink = linkagePath[i-1]
-				nextLink = linkagePath[i]
-				predecessors[nextLink] = currentLink
-				if not distances:
-					distances[nextLink] = graph[currentLink][nextLink]
-				else:
-					distances[nextLink] = distances[currentLink] + graph[currentLink][nextLink]
+			if pathDoesntCross(current,predecessors,linkagePath):
+				pathShortest = []
+				for i in range(1, len(linkagePath)):
+					currentLink = linkagePath[i-1]
+					nextLink = linkagePath[i]
+					predecessors[nextLink] = currentLink
+					if not distances:
+						distances[nextLink] = graph[currentLink][nextLink]
+					else:
+						distances[nextLink] = distances[currentLink] + graph[currentLink][nextLink]
+					pass
+					# try:
+					# 	distances[nextLink] = distances[currentLink] + graph[currentLink][nextLink]
+					# except Exception as e:
+					# 	distances[nextLink] = graph[currentLink][nextLink]
+					# 	print(distances)
+					# 	print(nextLink)
+					# 	print(currentLink)
+					# pass
 				pass
-				# try:
-				# 	distances[nextLink] = distances[currentLink] + graph[currentLink][nextLink]
-				# except Exception as e:
-				# 	distances[nextLink] = graph[currentLink][nextLink]
-				# 	print(distances)
-				# 	print(nextLink)
-				# 	print(currentLink)
-				# pass
+				current = end
 			pass
-			current = end
 		pass
 	pass
 
-	"""Find the shortest path between start and end nodes in a graph using Dijkstra's Algorithm"""
+
 	# we've found our end node, now find the path to it, and return
 	if current == end:
 		pathShortest = []
@@ -140,33 +160,45 @@ def dynamicDijkstra(graph, lock, current, end, dynamicPaths, visited=[], distanc
 			end = predecessors.get(end, None)
 		pass
 
-		# update dynamicPaths
+		# stage the new paths locally
+		localPathingStage = {}
 		for i in range(len(pathShortest)):
 			s = pathShortest[i]
 			pathPiece = []
 			pathPiece.append(s)
 			if s not in dynamicPaths:
-				dynamicPaths[s] = {}
+				localPathingStage[s] = {}
+			else:
+				localPathingStage[s] = {k:v for k,v in dynamicPaths[s].items()}
 			pass
+			
 			for j in range(i + 1, len(pathShortest)):
 				e = pathShortest[j]
 				pathPiece.append(e)
-				lock.acquire()
-				if e not in dynamicPaths[s]:
-					dynamicPaths[s] = {e: pathPiece}
+				if e not in localPathingStage[s]:
+					localPathingStage[s] = {e: pathPiece}
 				else:
-					dynamicPaths[s][e] = pathPiece
+					localPathingStage[s][e] = pathPiece
 				pass
-				lock.release()
 			pass
 		pass
+		
+		#Merge
+		lock.acquire()
+		for k,v in localPathingStage.items():
+			dynamicPaths[k] = v
+		pass
+		lock.release()
 
-		return distances[current], pathShortest[::-1]
+		try:
+			return distances[current], pathShortest[::-1]
+		except:
+			print('The path optimizer failed. Make sure your graph is connected.')
+			raise
+		pass
 
 	pass
 
-	# detect if it's the first time through, set current distance to zero
-	if not visited: distances[current] = 0
 	# process neighbors as per algorithm, keep track of predecessors
 	for adjacent in graph[current]:
 		if adjacent not in visited:
@@ -207,5 +239,20 @@ def dynamicDijkstra(graph, lock, current, end, dynamicPaths, visited=[], distanc
 	pass
 
 	# now we can take the closest node and recurse, making it current
-	return dynamicDijkstra(graph, lock, closest, end, dynamicPaths, visited, distances, predecessors)
+	return dynamicDijkstra(graph, lock, closest, end, dynamicPaths, startStatic, visited, distances, predecessors)
+pass
+
+def pathDoesntCross(current,predecessors,linkagePath):
+	currPath = []
+	end = current
+	while end != None:
+		currPath.append(end) #{(f):None,(d):(e),(c):(d),(b):(c),(a):(b)}
+		end = predecessors.get(end, None)
+	pass
+	for node in currPath:
+		if node in linkagePath:
+			return False
+		pass
+	pass
+	return True
 pass
