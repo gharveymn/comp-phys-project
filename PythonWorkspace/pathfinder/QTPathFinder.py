@@ -217,7 +217,6 @@ def findAllPaths(pack=[]):
 	pass
 	t2 = time.time()
 	print("Time taken: {0}s".format(t2 - t1))
-	return pack,pdict
 	return pack
 pass
 
