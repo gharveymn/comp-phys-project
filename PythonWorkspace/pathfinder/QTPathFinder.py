@@ -15,9 +15,6 @@ import sys
 
 import time
 
-from pympler.tracker import SummaryTracker
-tracker = SummaryTracker()
-
 
 def findShortestPath(startPoint, endPoint, pack=[]):
 	'''findShortestPath
@@ -45,6 +42,7 @@ def findShortestPath(startPoint, endPoint, pack=[]):
 
 	if not pack:
 		pack = initData()
+		plt.show()
 	pass
 
 	line = lines.Line2D([], [], lw=2, c='red')
@@ -110,6 +108,8 @@ def findPath(gdict, fig, ax, limits, startPoint, endPoint, line, type):
 	#The big ugly function gets the keys into a list of tuples [(1,2),(3,4),...]
 	r1 = Helper.findClosestNode(list(zip(*zip(*gdict.keys()))), startPoint)
 	r2 = Helper.findClosestNode(list(zip(*zip(*gdict.keys()))), endPoint)
+
+	sys.setrecursionlimit(1500)
 
 	try:
 		t1 = time.time()
@@ -199,13 +199,15 @@ def findAllPaths(pack=[]):
 	# path dictionary
 	pdict = {}
 
-	for i in gdict:
-		startPoints = []
+	allPoints = list(gdict.keys())
+	stride = 10
+
+	for i in range(0, len(allPoints), stride):
+		startPoints = allPoints[i:i+stride]
 		endPoints = []
-		startPoints.append(i)
-		for key in gdict:
-			if key not in startPoints:
-				endPoints.append(key)
+		for p in allPoints:
+			if p not in startPoints:
+				endPoints.append(p)
 			pass
 		pass
 
@@ -214,8 +216,6 @@ def findAllPaths(pack=[]):
 		t.start()
 		threads.append(t)
 	pass
-
-	tracker.threads
 
 	for t in threads:
 		t.join()
