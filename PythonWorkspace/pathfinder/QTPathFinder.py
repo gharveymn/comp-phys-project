@@ -182,6 +182,7 @@ def findAllPaths(pack=[]):
 	pass
 
 	gdict = pack[0]
+	numNodes = len(gdict)
 	dynamicPaths= {}
 
 	threads = []
