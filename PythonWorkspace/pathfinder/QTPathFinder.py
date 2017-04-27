@@ -195,7 +195,7 @@ def findAllPaths(pack=[]):
 
 	threads = []
 
-	adjMatLock = th.Lock()
+	lock = th.Lock()
 
 	fig = pack[1]
 	ax = pack[2]
@@ -205,22 +205,15 @@ def findAllPaths(pack=[]):
 	pdict = {}
 
 	allPoints = list(gdict.keys())
+	endPoints = allPoints #We just filter this later
 	numThreads = 4 #+-1
 	stride = int(len(allPoints)/numThreads)
 
 	for i in range(0, len(allPoints), stride):
 		startPoints = allPoints[i:i+stride]
-		endPoints = []
-		for p in allPoints:
-			if p not in startPoints:
-				endPoints.append(p)
-			pass
-		pass
 
-		random.shuffle(endPoints)
-
-		#ThreadedPartition.findPaths(pack, pdict, adjMatLock, dynamicPaths, startPoints, endPoints)
-		t = th.Thread(target = ThreadedPartition.findPaths, args = (pack, pdict, adjMatLock, dynamicPaths, startPoints, endPoints))
+		#ThreadedPartition.findPaths(pack, pdict, lock, dynamicPaths, startPoints, endPoints)
+		t = th.Thread(target = ThreadedPartition.findPaths, args = (pack, pdict, lock, dynamicPaths, startPoints, endPoints))
 		t.start()
 		threads.append(t)
 	pass
@@ -234,6 +227,25 @@ def findAllPaths(pack=[]):
 	t2 = time.time()
 	print("Time taken: {0}s".format(t2 - t1))
 	plt.show()
+
+	print(len(pdict))
+	print(len(dynamicPaths))
+
+	with lock:
+		for p in pdict:
+			if len(pdict[p]) != len(dynamicPaths[p]):
+				print("len(pdict[{0}])={1}".format(p,len(pdict[p])))
+				print("len(dynamicPaths[{0}])={1}".format(p,len(dynamicPaths[p])))
+				for k,v in pdict[p].items():
+					if k not in dynamicPaths[p]:
+						print("{0}:{1}".format(k,v))
+						print("\n")
+					pass
+				pass
+			pass
+		pass
+	pass
+
 	return pack, pdict
 pass
 
