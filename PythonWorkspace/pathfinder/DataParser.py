@@ -5,7 +5,7 @@ import os
 #Make sure this runs in the locating file directory
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-def parseQT(limits, rectVects):
+def parseQT():
 	my_file = filePath('QTData/tree.txt')
 	if not my_file.is_file():
 		print("QTData/tree.txt not created yet. Running QTData/CreateQT.exe ...")
@@ -19,6 +19,12 @@ def parseQT(limits, rectVects):
 		print("This shouldn't happen!")
 		raise
 	pass
+
+	mapfile = file.readline().rstrip()
+
+	#parse the rectangles barriers
+	limits, rectVects = parseMap(mapfile)
+
 
 	data = [float(val) for val in file.read().strip().split()]
 
@@ -41,11 +47,6 @@ def parseQT(limits, rectVects):
 			if (x,y) not in gdict:
 				gdict[(x,y)] = {}
 			pass
-
-			# addAdjacentEdge(x,y,l,0,limitRect,rectVects,gdict)
-			# addAdjacentEdge(x,y,-l,0,limitRect,rectVects,gdict)
-			# addAdjacentEdge(x,y,0,w,limitRect,rectVects,gdict)
-			# addAdjacentEdge(x,y,0,-w,limitRect,rectVects,gdict)
 
 			for j in range(i,i+num_adjacent*4,4):
 				x1 = data[j]
@@ -73,17 +74,18 @@ def parseQT(limits, rectVects):
 	print("Number of nodes: {0}".format(len(gdict)))
 	clean(gdict,rectVects)
 	print("Number of nodes in cleaned graph: {0}".format(len(gdict)))
-	return gdict
+
+	return gdict,limits,rectVects
 
 pass
 
 
-def parseMap():
+def parseMap(mapfile):
 
 	try:
-		file = open('QTData/map2.txt', 'r')
+		file = open('QTData/%s'%(mapfile), 'r')
 	except IOError:
-		print("QTData/map2.txt does not exist! Have you created it yet?")
+		print("QTData/{0} does not exist! Have you created it yet?".format(mapfile))
 		raise
 	pass
 
@@ -110,38 +112,8 @@ def parseMap():
 	return limits, rectVects
 pass
 
-
-def addAdjacentEdge(x,y,delx,dely,limitRect,rectVects,gdict):
-	r = (x+delx,y+dely)
-	if Helper.isInsideRect(r,limitRect,edgesAreLava=False) and not Helper.isInsideRect(r,rectVects):
-		dist = delx*delx + dely*dely
-		gdict[(x,y)][r] = dist
-		#print("{0}, {1}".format((x,y),(x,y+w)))
-		if r in gdict:
-			gdict[r][(x,y)] = dist
-			#print("{0}, {1}".format((x,y+w),(x,y)))
-		else:
-			gdict[r] = {(x,y):dist}
-			#print("{0}, {1}".format((x,y+w),(x,y)))
-		pass
-	pass
-pass
-
 def clean(gdict,rectVects):
 	# TODO: Get rid of useless cleaning if possible
-
-	# removalSet = []
-
-	# for fromKey in gdict:
-	# 	for toKey in gdict[fromKey]:
-	# 		midpoint = Helper.scadivtup(Helper.addtup(fromKey,toKey),2)
-	# 		if Helper.isInsideRect(midpoint,rectVects):
-	# 			removalSet += [toKey]
-	# 		pass
-	# 	pass
-	# pass
-
-	# removeKeys(gdict,removalSet)
 
 	removalSet = []
 
@@ -167,9 +139,7 @@ def clean(gdict,rectVects):
 		pass
 	pass
 
-	
 	removeKeys(gdict,removalSet)
-
 
 pass
 

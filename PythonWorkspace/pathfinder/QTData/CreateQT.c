@@ -130,6 +130,7 @@ int main(int argc, char** args)
 	makeAdjacencyLists(map, children);
 
 	FILE* fp = fopen("tree.txt", "w");
+	fprintf(fp,"%s\n",map_file);
 	outputTree(root, fp, root->square);
 	fclose(fp);
 	freePointers();

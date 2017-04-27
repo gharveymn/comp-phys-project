@@ -68,11 +68,8 @@ def initData():
 	#ion is interactive mode on. This makes it so the window doesn't close after processing
 	plt.ion()
 
-	#parse the rectangles
-	limits, rectVects = DataParser.parseMap()
-
 	#Get data from the quadtree file
-	gdict = DataParser.parseQT(limits, rectVects)
+	gdict,limits,rectVects = DataParser.parseQT()
 
 	fig, ax = Plotting.plotBox(gdict, limits, rectVects)
 
@@ -209,6 +206,7 @@ def findAllPaths(pack=[]):
 	numThreads = 4 #+-1
 	stride = int(len(allPoints)/numThreads)
 
+	t2 = time.time()
 	for i in range(0, len(allPoints), stride):
 		startPoints = allPoints[i:i+stride]
 
@@ -218,33 +216,31 @@ def findAllPaths(pack=[]):
 		threads.append(t)
 	pass
 
-	totalPaths = len(allPoints)**2 - len(allPoints)
-	reportStatus(pdict,totalPaths,threads[len(threads)-1])
+	totalPaths = (len(allPoints)-1)**2 - len(allPoints)
+	reportStatus(pdict,totalPaths,threads)
 
 	for t in threads:
 		t.join()
 	pass
-	t2 = time.time()
-	print("Time taken: {0}s".format(t2 - t1))
+	t3 = time.time()
+	print("Time taken optimizing paths: {0}s".format(t3 - t2))
+	print("Total time taken: {0}s".format(t3 - t1))
 	plt.show()
 
-	print(len(pdict))
-	print(len(dynamicPaths))
-
-	with lock:
-		for p in pdict:
-			if len(pdict[p]) != len(dynamicPaths[p]):
-				print("len(pdict[{0}])={1}".format(p,len(pdict[p])))
-				print("len(dynamicPaths[{0}])={1}".format(p,len(dynamicPaths[p])))
-				for k,v in pdict[p].items():
-					if k not in dynamicPaths[p]:
-						print("{0}:{1}".format(k,v))
-						print("\n")
-					pass
-				pass
-			pass
-		pass
-	pass
+	# with lock:
+	# 	for p in pdict:
+	# 		if len(pdict[p]) != len(dynamicPaths[p]):
+	# 			print("len(pdict[{0}])={1}".format(p,len(pdict[p])))
+	# 			print("len(dynamicPaths[{0}])={1}".format(p,len(dynamicPaths[p])))
+	# 			for k,v in pdict[p].items():
+	# 				if k not in dynamicPaths[p]:
+	# 					print("{0}:{1}".format(k,v))
+	# 					print("\n")
+	# 				pass
+	# 			pass
+	# 		pass
+	# 	pass
+	# pass
 
 	return pack, pdict
 pass
@@ -264,15 +260,22 @@ def plotPathWithResults(pack,pdict,startPoint,endPoint):
 pass
 
 
-def reportStatus(pdict,total,sentinel):
-	if(sentinel.isAlive()):
+def reportStatus(pdict,total,sentinels):
+	sentinel = False
+	for s in sentinels:
+		if(s.isAlive()):
+			sentinel = True
+		pass
+	pass
+
+	if sentinel:
 		numFound = 0
 		for v in pdict.values():
 			numFound += len(v)
 		pass
 
 		print("pdict has acquired pathing for {0} of {1} total paths".format(numFound,total))
-		t = th.Timer(5,reportStatus,[pdict,total,sentinel])
+		t = th.Timer(2,reportStatus,[pdict,total,sentinels])
 		t.start()
 	pass
 pass
