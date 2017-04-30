@@ -59,10 +59,10 @@ bool filled_by_object(Map* map, Square area);
 
 
 //These constants are important in order to avoid memory overflow for high threshold value
-int qt_threshold = 5;
+int qt_threshold = 6;
 float actual_to_max_children_ratio = 0.75;
 int max_num_adjacent = 30;
-char* map_file = "map3.txt";
+char* map_file = "map2.txt";
 
 int num_children;
 int max_children;

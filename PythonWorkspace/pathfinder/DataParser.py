@@ -5,7 +5,7 @@ import os
 #Make sure this runs in the locating file directory
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-def parseQT():
+def parseQT(justTheRectangles=False):
 	my_file = filePath('QTData/tree.txt')
 	if not my_file.is_file():
 		print("QTData/tree.txt not created yet. Running QTData/CreateQT.exe ...")
@@ -24,6 +24,11 @@ def parseQT():
 
 	#parse the rectangles barriers
 	limits, rectVects = parseMap(mapfile)
+
+	#Quick and dirty for the demo
+	if justTheRectangles:
+		return limits, rectVects
+	pass
 
 
 	data = [float(val) for val in file.read().strip().split()]

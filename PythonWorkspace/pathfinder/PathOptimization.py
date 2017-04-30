@@ -146,7 +146,7 @@ def dynamicDijkstra(graph, lock, current, end, dynamicPaths, startStatic, visite
 			end = predecessors.get(end, None)
 		pass
 
-		# stage the new paths locally
+		# stage the new paths locally before merging into the dynamicPaths hashtable
 		localPathingStage = {}
 		for i in range(len(pathShortest)):
 			s = pathShortest[i]

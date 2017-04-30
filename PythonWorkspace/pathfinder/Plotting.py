@@ -1,5 +1,4 @@
 import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import matplotlib.ticker as mt
@@ -8,7 +7,8 @@ import matplotlib.patches as patches
 
 
 def plot2dHeatMap(fig, x, y, z):
-	'''z is a 2d grid; x and y are implicit linspaces'''
+	'''z is a 2d grid; x and y are implicit linspaces.
+		Input x and y just to easily change between the and plot3dHeadMap'''
 	
 	from mpl_toolkits.axes_grid1 \
 		import SubplotDivider, LocatableAxes, Size

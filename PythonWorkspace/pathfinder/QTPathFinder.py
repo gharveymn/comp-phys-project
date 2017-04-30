@@ -4,17 +4,12 @@ import PathOptimization
 import HelperMethods as Helper
 
 import matplotlib.pyplot as plt
-import matplotlib.path as mpath
-import matplotlib.patches as patches
-import matplotlib.animation as animation
 import matplotlib.lines as lines
-import numpy as np
 import threading as th
 import ThreadedPartition
 import sys
 
 import time
-import random
 
 
 def findShortestPath(startPoint, endPoint, pack=[]):
@@ -30,15 +25,13 @@ def findShortestPath(startPoint, endPoint, pack=[]):
 		
 		Returns:
 			pack
-				Contains:
-					gdict
-						-data as a graph dictionary with structure {(x1,y1):{(x1',y1'):d(r,r'),...},...}
-							-this can be very large! This is why pack exists, keep it on return and input it on the next go
-					fig
-						-the current figure, so we can keep figure consistent
-					ax
-						-same idea
-
+				gdict		data as a graph dictionary with the
+							structure {(x1,y1):{(x1',y1'):d(r,r'),...},...}.
+							This can be very large! Keep it on return and input it 
+							on the next go
+				fig			the current figure, so we can keep figure consistent
+				ax			same idea
+				limits		the box limits. Used to throw errors.	
 	'''
 
 	if not pack:
@@ -62,6 +55,16 @@ pass
 
 
 def initData():
+	'''initData
+		Initializes the data from the generated QT data set
+
+		args:
+			None
+
+		return:
+			[gdict, fig, ax, limits]			this is the variable pack. Saved because gdict 
+										can be very large.
+	'''
 
 	plt.clf()
 
@@ -82,7 +85,6 @@ pass
 
 def findPath(gdict, fig, ax, limits, startPoint, endPoint, line, type):
 	'''findPath
-
 		Finds the shortest path with the algorithm specified by 'type'.
 
 		calls:
@@ -159,23 +161,21 @@ def findPathBoth(gdict, fig, ax, limits, startPoint, endPoint, line):
 	findPath(gdict, fig, ax, limits, startPoint, endPoint, line, 'a')
 	findPath(gdict, fig, ax, limits, startPoint, endPoint, line, 'd')
 
-
 pass
 
 
 def findAllPaths(pack=[]):
-	'''
-		Finds all paths between nodes from the quadtree
-
-		Also tries to to live plotting, but only sometimes works.
+	'''findAllPaths
+		Finds all paths between nodes from the quadtree. **Main entry point**
 		
 		calls:
 			initData()		initializes gdict, calls the data parser
 			plotBox()			plots the main box
 			findPath()		finds the shortest path with specified algorithm
-		args:
+
+		kwargs:
 			pack				pack includes gdict,fig,ax,limits, used to speed up repeated calls
-			needsFigure		if we closed the figure set this to true to get a new one
+
 		return:
 			pack
 			
@@ -209,8 +209,7 @@ def findAllPaths(pack=[]):
 	t2 = time.time()
 	for i in range(0, len(allPoints), stride):
 		startPoints = allPoints[i:i+stride]
-
-		#ThreadedPartition.findPaths(pack, pdict, lock, dynamicPaths, startPoints, endPoints)
+		
 		t = th.Thread(target = ThreadedPartition.findPaths, args = (pack, pdict, lock, dynamicPaths, startPoints, endPoints))
 		t.start()
 		threads.append(t)
@@ -227,6 +226,7 @@ def findAllPaths(pack=[]):
 	print("Total time taken: {0}s".format(t3 - t1))
 	plt.show()
 
+	#Testing if we can just use dynamicPaths for all operations: turns out we can't for some reason
 	# with lock:
 	# 	for p in pdict:
 	# 		if len(pdict[p]) != len(dynamicPaths[p]):
@@ -246,21 +246,65 @@ def findAllPaths(pack=[]):
 pass
 
 
-def plotPathWithResults(pack,pdict,startPoint,endPoint):
+def plotPathWithResults(pack,pdict,startPoint,endPoint,line=None):
+	'''plotPathWithResults
+		Uses results from findAllPaths() to plot the shortest path between two points
+
+		args:
+			pack			needed for the figure axis, returned by findAllPaths()
+			pdict		the primary results from findAllPaths(); hashtable of all paths
+			startPoint	starting point of your path
+			endPoint		end point of your path
+		
+		kwargs:
+			line			a line object returned by this method. If you want subsequent calls to 
+						this function to overwrite the last found paths then input the line 
+						object returned by this method.
+
+		return:
+			line			the line object created by this method. Used to overwrite past lines
+						in subsequent calls.
+	
+	'''
+
+	if not line:
+		line = lines.Line2D([], [], lw=2, c='red')
+		ax = pack[2]
+		ax.add_line(line)
+	pass
 
 	r1 = Helper.findClosestNode(list(zip(*zip(*pdict.keys()))), startPoint)
 	r2 = Helper.findClosestNode(list(zip(*zip(*pdict.keys()))), endPoint)
 
-	foundPath = pdict[r1][r2]
+	foundPath = []
+
+	if r1 != r2:
+		foundPath = pdict[r1][r2]
+	pass
+
 	foundPath.insert(0,startPoint)
 	foundPath.append(endPoint)
 
-	Plotting.plotPath(pack[2],foundPath,ec='r')
+	line.set_xdata([p[0] for p in foundPath])
+	line.set_ydata([p[1] for p in foundPath])
 
+	return line
 pass
 
 
 def reportStatus(pdict,total,sentinels):
+	'''reportStatus
+		Prints output with info on number of paths computed vs total paths to compute. Threaded recursion.
+
+		args:
+			pdict		the path dictionary
+			total		total number of paths to compute
+			sentinels		the threads. Method checks if they are all dead or not (if they are then stop).
+		
+		return:
+			None
+	'''
+
 	sentinel = False
 	for s in sentinels:
 		if(s.isAlive()):
@@ -283,5 +327,4 @@ pass
 
 if __name__ == "__main__":
 	findAllPaths()
-	#findShortestPath((10, 0), (7, 7))
 pass
