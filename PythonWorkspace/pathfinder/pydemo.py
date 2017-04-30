@@ -40,6 +40,7 @@ def runDemo():
 	os.chdir("..")
 
 	animatedprint("Now we'll find the shortest path between all nodes...")
+	printsleep(2.0)
 	import QTPathFinder as qt
 	pack,pdict = qt.findAllPaths()
 	mngr = plt.get_current_fig_manager()
@@ -84,6 +85,7 @@ def runDemo():
 	pass
 	printsleep(3.0)
 	animatedprint("Begin plotting...")
+	printsleep(1.0)
 
 	demoPoints = dict(zip(startPoints,endPoints))
 
@@ -101,7 +103,7 @@ def runDemo():
 	print("...Done!")
 	printsleep(1.0)
 
-	animatedprint("\n\nThis ends the demo. Thanks for watching!")
+	animatedprint("\nThis ends the demo. Thanks for watching!")
 	plt.pause(5.0)
 
 pass
